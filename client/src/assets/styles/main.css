@@ -1,0 +1,480 @@
+/* =====================================================
+   Inco Tech Solutions - Custom Styles
+   Theme: Cyber-Professional & Sleek
+   ===================================================== */
+
+/* ─── CSS Variables ─── */
+:root {
+  --inco-primary: #007bff;
+  --inco-primary-light: #3b82f6;
+  --inco-primary-dark: #1d4ed8;
+  --inco-secondary: #1e293b;
+  --inco-accent: #06b6d4;
+  --inco-success: #10b981;
+  --inco-warning: #f59e0b;
+  --inco-danger: #ef4444;
+  --inco-surface-dark: #0f172a;
+  --inco-surface-card: #1e293b;
+  --inco-text-primary: #f1f5f9;
+  --inco-text-secondary: #94a3b8;
+  --inco-border: #334155;
+  --inco-glow: 0 0 20px rgba(0, 123, 255, 0.3);
+  --inco-radius: 12px;
+  --inco-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Global Resets ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.app-dark body,
+.app-dark {
+  background-color: var(--inco-surface-dark);
+  color: var(--inco-text-primary);
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--inco-surface-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--inco-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--inco-text-secondary);
+}
+
+/* ─── Typography ─── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--inco-primary-light);
+  text-decoration: none;
+  transition: var(--inco-transition);
+}
+
+a:hover {
+  color: var(--inco-primary);
+}
+
+/* ─── Utility Classes ─── */
+.section-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--inco-primary-light), var(--inco-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  color: var(--inco-text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+/* ─── Glow Effects ─── */
+.glow-border {
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+  transition: var(--inco-transition);
+}
+
+.glow-border:hover {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+/* ─── Card Styles ─── */
+.cyber-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border: 1px solid var(--inco-border);
+  border-radius: var(--inco-radius);
+  backdrop-filter: blur(10px);
+  transition: var(--inco-transition);
+  overflow: hidden;
+}
+
+.cyber-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(59, 130, 246, 0.1);
+}
+
+/* ─── Button Overrides ─── */
+.btn-cyber {
+  background: linear-gradient(135deg, var(--inco-primary), var(--inco-primary-dark)) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.025em;
+  transition: var(--inco-transition) !important;
+}
+
+.btn-cyber:hover {
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.btn-outline-cyber {
+  background: transparent !important;
+  border: 2px solid var(--inco-primary) !important;
+  color: var(--inco-primary-light) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: var(--inco-transition) !important;
+}
+
+.btn-outline-cyber:hover {
+  background: rgba(0, 123, 255, 0.1) !important;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.2) !important;
+}
+
+/* ─── Badge / Tag Styles ─── */
+.tag-new {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.tag-refurbished {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.tag-in-stock {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.tag-out-of-stock {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+.tag-sold {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+}
+
+/* ─── Hero Section ─── */
+.hero-section {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+/* ─── Floating Animation ─── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 123, 255, 0.4);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+
+/* ─── Product Image ─── */
+.product-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+}
+
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+.product-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--inco-text-secondary);
+  font-size: 3rem;
+}
+
+/* ─── Navbar ─── */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid var(--inco-border);
+  transition: var(--inco-transition);
+}
+
+.navbar.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Admin Sidebar ─── */
+.admin-sidebar {
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  border-right: 1px solid var(--inco-border);
+  min-height: 100vh;
+  width: 260px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 1rem;
+  transition: var(--inco-transition);
+  z-index: 100;
+}
+
+.admin-content {
+  margin-left: 260px;
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--inco-surface-dark);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  color: var(--inco-text-secondary);
+  font-weight: 500;
+  transition: var(--inco-transition);
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+
+.sidebar-link:hover {
+  color: var(--inco-text-primary);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.sidebar-link.active {
+  color: var(--inco-primary-light);
+  background: rgba(59, 130, 246, 0.12);
+  border-left-color: var(--inco-primary);
+}
+
+/* ─── Stat Cards ─── */
+.stat-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.8));
+  border: 1px solid var(--inco-border);
+  border-radius: var(--inco-radius);
+  padding: 1.5rem;
+  transition: var(--inco-transition);
+}
+
+.stat-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* ─── Footer ─── */
+.site-footer {
+  background: linear-gradient(180deg, #0f172a, #020617);
+  border-top: 1px solid var(--inco-border);
+  padding: 3rem 0 1.5rem;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 70px;
+    overflow: hidden;
+  }
+
+  .admin-sidebar .sidebar-text {
+    display: none;
+  }
+
+  .admin-content {
+    margin-left: 70px;
+    padding: 1rem;
+  }
+
+  .hero-section {
+    min-height: 70vh;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* ─── PrimeVue Overrides ─── */
+.app-dark .p-datatable .p-datatable-thead > tr > th {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: var(--inco-border);
+}
+
+.app-dark .p-datatable .p-datatable-tbody > tr {
+  background: transparent;
+  border-color: var(--inco-border);
+}
+
+.app-dark .p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.app-dark .p-dialog {
+  border: 1px solid var(--inco-border);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.app-dark .p-dialog .p-dialog-header {
+  border-bottom: 1px solid var(--inco-border);
+}
+
+.p-button.p-button-rounded {
+  border-radius: 50% !important;
+}
+
+/* ─── Loading Skeleton Shimmer ─── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.5) 25%,
+    rgba(59, 130, 246, 0.08) 50%,
+    rgba(30, 41, 59, 0.5) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}

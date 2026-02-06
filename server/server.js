@@ -1,0 +1,101 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ─── MIDDLEWARE ───
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// ─── STATIC FILES ───
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ─── ROUTES ───
+const productRoutes = require('./routes/products');
+const categoryRoutes = require('./routes/categories');
+const repairRoutes = require('./routes/repairs');
+
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/repairs', repairRoutes);
+
+// ─── DASHBOARD STATS ───
+const pool = require('./config/db');
+
+app.get('/api/dashboard/stats', async (_req, res) => {
+  try {
+    const [productCount] = await pool.query('SELECT COUNT(*) AS count FROM products');
+    const [categoryCount] = await pool.query('SELECT COUNT(*) AS count FROM categories');
+    const [repairCount] = await pool.query('SELECT COUNT(*) AS count FROM repair_requests');
+    const [inStockCount] = await pool.query(
+      "SELECT COUNT(*) AS count FROM products WHERE status = 'in_stock'",
+    );
+    const [outOfStockCount] = await pool.query(
+      "SELECT COUNT(*) AS count FROM products WHERE status = 'out_of_stock'",
+    );
+    const [soldCount] = await pool.query(
+      "SELECT COUNT(*) AS count FROM products WHERE status = 'sold'",
+    );
+    const [pendingRepairs] = await pool.query(
+      "SELECT COUNT(*) AS count FROM repair_requests WHERE status = 'pending'",
+    );
+    const [totalRevenuePotential] = await pool.query(
+      "SELECT SUM(price * quantity) AS total FROM products WHERE status = 'in_stock'",
+    );
+
+    res.json({
+      success: true,
+      data: {
+        totalProducts: productCount[0].count,
+        totalCategories: categoryCount[0].count,
+        totalRepairs: repairCount[0].count,
+        inStock: inStockCount[0].count,
+        outOfStock: outOfStockCount[0].count,
+        sold: soldCount[0].count,
+        pendingRepairs: pendingRepairs[0].count,
+        inventoryValue: totalRevenuePotential[0].total || 0,
+      },
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats' });
+  }
+});
+
+// ─── HEALTH CHECK ───
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'Inco Tech Solutions API',
+  });
+});
+
+// ─── ERROR HANDLING ───
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled error:', err);
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res
+      .status(413)
+      .json({ success: false, message: 'File too large. Maximum size is 5MB.' });
+  }
+  res.status(500).json({ success: false, message: err.message || 'Internal server error' });
+});
+
+// ─── START SERVER ───
+app.listen(PORT, () => {
+  console.log(`\n🚀 Inco Tech Solutions API Server`);
+  console.log(`   Environment : ${process.env.NODE_ENV || 'development'}`);
+  console.log(`   Port        : ${PORT}`);
+  console.log(`   URL         : http://localhost:${PORT}`);
+  console.log(`   Health      : http://localhost:${PORT}/api/health\n`);
+});
