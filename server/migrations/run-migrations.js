@@ -1,0 +1,110 @@
+/**
+ * Migration Runner
+ * Executes pending migrations in sequence and tracks them
+ * Usage: node migrations/run-migrations.js
+ */
+
+const fs = require('fs');
+const path = require('path');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const MIGRATIONS_DIR = path.join(__dirname);
+
+// Database connection config
+const dbConfig = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+};
+
+async function runMigrations() {
+  let connection;
+
+  try {
+    // Create connection to database
+    connection = await mysql.createConnection(dbConfig);
+    console.log('✅ Connected to database:', process.env.DB_NAME);
+
+    // Create migrations tracking table if it doesn't exist
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS migrations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ Migrations tracking table ready');
+
+    // Get list of migration files (excluding this runner script)
+    const files = fs
+      .readdirSync(MIGRATIONS_DIR)
+      .filter((f) => f.endsWith('.sql'))
+      .sort();
+
+    if (files.length === 0) {
+      console.log('ℹ️  No migration files found');
+      return;
+    }
+
+    // Get list of already applied migrations
+    const [applied] = await connection.query('SELECT name FROM migrations');
+    const appliedNames = new Set(applied.map((m) => m.name));
+
+    console.log(`\n📋 Found ${files.length} migration file(s)`);
+    console.log(`✔️  Already applied: ${appliedNames.size}`);
+    console.log(`⏳ Pending: ${files.length - appliedNames.size}\n`);
+
+    // Run pending migrations
+    let executed = 0;
+    for (const file of files) {
+      if (appliedNames.has(file)) {
+        console.log(`⊘ ${file} (already applied)`);
+        continue;
+      }
+
+      try {
+        const filePath = path.join(MIGRATIONS_DIR, file);
+        const sql = fs.readFileSync(filePath, 'utf8');
+
+        // Split by newlines and filter out comments and empty lines
+        const statements = sql
+          .split(';')
+          .map((stmt) => stmt.trim())
+          .filter((stmt) => stmt && !stmt.startsWith('--'));
+
+        // Execute each statement
+        for (const statement of statements) {
+          if (statement) {
+            await connection.query(statement);
+          }
+        }
+
+        // Track migration as applied
+        await connection.query('INSERT INTO migrations (name) VALUES (?)', [file]);
+        console.log(`✓ ${file}`);
+        executed++;
+      } catch (err) {
+        console.error(`✗ ${file} - ERROR:`, err.message);
+        throw err;
+      }
+    }
+
+    console.log(`\n✅ Migration complete! ${executed} migration(s) executed`);
+  } catch (err) {
+    console.error('❌ Migration failed:', err.message);
+    process.exit(1);
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+// Run migrations
+runMigrations();
