@@ -3,7 +3,7 @@
    Theme: Cyber-Professional & Sleek
    ===================================================== */
 
-/* ─── CSS Variables ─── */
+/* ─── CSS Variables (Dark Mode - Default) ─── */
 :root {
   --inco-primary: #007bff;
   --inco-primary-light: #3b82f6;
@@ -21,6 +21,21 @@
   --inco-glow: 0 0 20px rgba(0, 123, 255, 0.3);
   --inco-radius: 12px;
   --inco-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Light Mode Variable Overrides ─── */
+:root:not(.app-dark) {
+  --inco-primary: #0062cc;
+  --inco-primary-light: #2563eb;
+  --inco-primary-dark: #1e40af;
+  --inco-secondary: #e2e8f0;
+  --inco-accent: #0891b2;
+  --inco-surface-dark: #f8fafc;
+  --inco-surface-card: #ffffff;
+  --inco-text-primary: #0f172a;
+  --inco-text-secondary: #475569;
+  --inco-border: #e2e8f0;
+  --inco-glow: 0 0 20px rgba(0, 98, 204, 0.15);
 }
 
 /* ─── Global Resets ─── */
@@ -55,6 +70,22 @@ body {
   color: var(--inco-text-primary);
 }
 
+/* ─── Light Mode Base ─── */
+:root:not(.app-dark) body,
+:root:not(.app-dark) {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) h1,
+:root:not(.app-dark) h2,
+:root:not(.app-dark) h3,
+:root:not(.app-dark) h4,
+:root:not(.app-dark) h5,
+:root:not(.app-dark) h6 {
+  color: #0f172a;
+}
+
 /* ─── Custom Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 8px;
@@ -72,6 +103,19 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--inco-text-secondary);
+}
+
+/* Light mode scrollbar */
+:root:not(.app-dark) ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+:root:not(.app-dark) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+:root:not(.app-dark) ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* ─── Typography ─── */
@@ -477,4 +521,205 @@ a:hover {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
+}
+
+/* =====================================================
+   LIGHT MODE OVERRIDES
+   ===================================================== */
+
+/* ─── Light: Card Styles ─── */
+:root:not(.app-dark) .cyber-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.app-dark) .cyber-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08),
+    0 0 20px rgba(37, 99, 235, 0.08);
+}
+
+/* ─── Light: Glow Effects ─── */
+:root:not(.app-dark) .glow-border {
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.06);
+}
+
+:root:not(.app-dark) .glow-border:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+}
+
+/* ─── Light: Hero Section ─── */
+:root:not(.app-dark) .hero-section {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 50%, #f0f4ff 100%);
+}
+
+:root:not(.app-dark) .hero-section::before {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+}
+
+:root:not(.app-dark) .hero-grid-bg {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+}
+
+/* ─── Light: Navbar ─── */
+:root:not(.app-dark) .navbar {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom-color: #e2e8f0;
+}
+
+:root:not(.app-dark) .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Light: Product Image ─── */
+:root:not(.app-dark) .product-image-wrapper {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+
+:root:not(.app-dark) .product-no-image {
+  color: #94a3b8;
+}
+
+/* ─── Light: Admin Sidebar ─── */
+:root:not(.app-dark) .admin-sidebar {
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  border-right-color: #e2e8f0;
+}
+
+:root:not(.app-dark) .admin-content {
+  background: #f8fafc;
+}
+
+:root:not(.app-dark) .sidebar-link {
+  color: #475569;
+}
+
+:root:not(.app-dark) .sidebar-link:hover {
+  color: #0f172a;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+:root:not(.app-dark) .sidebar-link.active {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border-left-color: #2563eb;
+}
+
+/* ─── Light: Stat Cards ─── */
+:root:not(.app-dark) .stat-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.app-dark) .stat-card:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.08);
+}
+
+/* ─── Light: Footer ─── */
+:root:not(.app-dark) .site-footer {
+  background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
+  border-top-color: #e2e8f0;
+}
+
+/* ─── Light: Buttons ─── */
+:root:not(.app-dark) .btn-outline-cyber {
+  border-color: var(--inco-primary) !important;
+  color: var(--inco-primary) !important;
+}
+
+:root:not(.app-dark) .btn-outline-cyber:hover {
+  background: rgba(37, 99, 235, 0.08) !important;
+}
+
+/* ─── Light: Section Title ─── */
+:root:not(.app-dark) .section-title {
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Light: Skeleton Shimmer ─── */
+:root:not(.app-dark) .skeleton-shimmer {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+}
+
+/* ─── Light: PrimeVue Overrides ─── */
+:root:not(.app-dark) .p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+:root:not(.app-dark) .p-datatable .p-datatable-tbody > tr {
+  background: #ffffff;
+  border-color: #f1f5f9;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-datatable .p-datatable-tbody > tr:hover {
+  background: #f0f4ff;
+}
+
+:root:not(.app-dark) .p-dialog {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+}
+
+:root:not(.app-dark) .p-dialog .p-dialog-header {
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-dialog .p-dialog-content {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-inputtext {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-inputtext:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+:root:not(.app-dark) .p-select {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-textarea {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+:root:not(.app-dark) .p-paginator {
+  background: transparent;
+}
+
+:root:not(.app-dark) .p-tag {
+  font-weight: 600;
 }

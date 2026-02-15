@@ -44,7 +44,16 @@
           </h3>
           <div class="grid">
             <div v-for="(inv, i) in inventoryStats" :key="i" class="col-12 sm:col-4">
-              <div class="text-center p-3 border-round" style="background: rgba(30, 41, 59, 0.5)">
+              <div
+                class="text-center p-3 border-round"
+                style="
+                  background: color-mix(
+                    in srgb,
+                    var(--inco-surface-card) 60%,
+                    var(--inco-surface-dark)
+                  );
+                "
+              >
                 <div class="text-2xl font-bold mb-1" :style="{ color: inv.color }">
                   {{ inv.value }}
                 </div>

@@ -148,7 +148,14 @@
               <div v-for="spec in specs" :key="spec.label" class="col-12 sm:col-6 lg:col-4">
                 <div
                   class="flex align-items-center gap-3 p-3 border-round mb-2"
-                  style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--inco-border)"
+                  style="
+                    background: color-mix(
+                      in srgb,
+                      var(--inco-surface-card) 60%,
+                      var(--inco-surface-dark)
+                    );
+                    border: 1px solid var(--inco-border);
+                  "
                 >
                   <div
                     class="flex align-items-center justify-content-center"

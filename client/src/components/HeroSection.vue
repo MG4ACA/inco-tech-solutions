@@ -429,3 +429,67 @@ defineEmits(['openRepair']);
   }
 }
 </style>
+
+<!-- Light mode overrides (unscoped so :root selector works) -->
+<style>
+:root:not(.app-dark) .hero-main-image {
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.12),
+    0 0 40px rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+:root:not(.app-dark) .hero-glow-ring {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.2),
+    rgba(6, 182, 212, 0.2),
+    rgba(99, 102, 241, 0.15)
+  );
+  opacity: 0.35;
+}
+
+:root:not(.app-dark) .hero-float-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.97));
+  border-color: rgba(226, 232, 240, 0.8);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.app-dark) .hero-float-card:hover {
+  box-shadow:
+    0 15px 40px rgba(37, 99, 235, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+:root:not(.app-dark) .hero-badge-top {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.03));
+  border-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+:root:not(.app-dark) .hero-badge-bottom {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.03));
+  border-color: rgba(6, 182, 212, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+:root:not(.app-dark) .hero-stats-pill {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.app-dark) .hero-deco-circle {
+  border-color: rgba(37, 99, 235, 0.1);
+}
+
+:root:not(.app-dark) .hero-deco-2 {
+  border-color: rgba(6, 182, 212, 0.08);
+}
+
+:root:not(.app-dark) .hero-deco-3 {
+  border-color: rgba(99, 102, 241, 0.06);
+}
+</style>

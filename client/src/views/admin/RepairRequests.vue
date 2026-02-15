@@ -191,7 +191,11 @@
           <div
             class="p-3 border-round text-sm"
             style="
-              background: rgba(30, 41, 59, 0.6);
+              background: color-mix(
+                in srgb,
+                var(--inco-surface-card) 60%,
+                var(--inco-surface-dark)
+              );
               border: 1px solid var(--inco-border);
               color: var(--inco-text-primary);
             "
