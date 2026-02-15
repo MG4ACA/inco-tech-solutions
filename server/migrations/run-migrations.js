@@ -1,13 +1,15 @@
 /**
  * Migration Runner
  * Executes pending migrations in sequence and tracks them
- * Usage: node migrations/run-migrations.js
+ * Usage: node migrations/run-migrations.js OR npm run migrate
  */
 
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+
+// Load .env from server directory (parent of migrations folder)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const MIGRATIONS_DIR = path.join(__dirname);
 
@@ -23,10 +25,26 @@ const dbConfig = {
   queueLimit: 0,
 };
 
+// Validate required environment variables
+const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars.join(', '));
+  console.error('💡 Make sure .env file exists in the server directory');
+  process.exit(1);
+}
+
 async function runMigrations() {
   let connection;
 
   try {
+    console.log('🔧 Database Configuration:');
+    console.log(`   Host: ${dbConfig.host}`);
+    console.log(`   Port: ${dbConfig.port || 3306}`);
+    console.log(`   User: ${dbConfig.user}`);
+    console.log(`   Database: ${dbConfig.database}\n`);
+
     // Create connection to database
     connection = await mysql.createConnection(dbConfig);
     console.log('✅ Connected to database:', process.env.DB_NAME);
