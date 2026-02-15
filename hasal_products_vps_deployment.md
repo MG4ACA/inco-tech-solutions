@@ -156,15 +156,32 @@ cd /var/www/inco-tech-solutions
 **✨ Single Repository Advantage:** With monorepo structure, you only need to clone once!
 
 ```bash
-# Clone your GitHub repository (monorepo)
+# Method 1: Clone directly into the directory (RECOMMENDED)
+cd /var/www/inco-tech-solutions
 sudo git clone https://github.com/mg4aca/inco-tech-solutions.git .
+# Note: The dot (.) at the end clones into current directory
 
-# Or clone to a folder then move
+# Method 2: Clone then move contents
+cd /var/www
 sudo git clone https://github.com/mg4aca/inco-tech-solutions.git
-cd inco-tech-solutions
+# This creates /var/www/inco-tech-solutions/
 
 # Alternative: Upload via SCP from local machine
-# scp -r /path/to/inco-tech-solutions root@your_vps_ip:/var/www/
+# scp -r /path/to/inco-tech-solutions/* root@your_vps_ip:/var/www/inco-tech-solutions/
+```
+
+**⚠️ Important:** Make sure your final structure is:
+```
+/var/www/inco-tech-solutions/
+├── client/
+├── server/
+├── database/
+└── README.md
+```
+
+NOT:
+```
+/var/www/inco-tech-solutions/inco-tech-solutions/  ❌ (Double nested - avoid this!)
 ```
 
 ### 4.3 Verify Repository Structure
@@ -856,6 +873,34 @@ cat /var/www/inco-tech-solutions/server/.env
 # Test connection from Node.js
 cd /var/www/inco-tech-solutions/server
 node -e "const mysql = require('mysql2'); const conn = mysql.createConnection({host:'localhost', user:'inco_tech_admin', password:'your_password', database:'inco_tech_solutions'}); conn.connect(err => {if(err) console.error(err); else console.log('Connected!'); conn.end();});"
+```
+
+### Migration Says "No migration files found"
+
+```bash
+# Check if SQL files exist in migrations folder
+ls -la /var/www/inco-tech-solutions/server/migrations/
+# You should see: 001_initial_schema.sql, 002_seed_initial_data.sql
+
+# If files are missing, you may have:
+# 1. Double nested directory structure (wrong path)
+pwd  # Should show: /var/www/inco-tech-solutions
+# NOT: /var/www/inco-tech-solutions/inco-tech-solutions
+
+# 2. Files not committed to git - check locally
+git status
+
+# 3. Wrong branch checked out
+git branch
+git checkout main
+
+# 4. Pull latest changes
+git pull origin main
+
+# Verify correct structure:
+cd /var/www/inco-tech-solutions
+ls -la
+# Should see: client/, server/, database/, README.md
 ```
 
 ---
