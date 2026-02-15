@@ -67,10 +67,3 @@ CREATE TABLE IF NOT EXISTS repair_requests (
   INDEX idx_status (status),
   INDEX idx_urgency (urgency)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Tracking table for applied migrations
-CREATE TABLE IF NOT EXISTS migrations (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL UNIQUE,
-  applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

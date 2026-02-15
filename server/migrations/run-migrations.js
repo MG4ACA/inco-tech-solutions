@@ -90,11 +90,17 @@ async function runMigrations() {
         const filePath = path.join(MIGRATIONS_DIR, file);
         const sql = fs.readFileSync(filePath, 'utf8');
 
-        // Split by newlines and filter out comments and empty lines
-        const statements = sql
+        // Remove comment lines and split by semicolon
+        const cleanSql = sql
+          .split('\n')
+          .filter((line) => !line.trim().startsWith('--'))
+          .join('\n');
+
+        // Split statements by semicolon and clean up
+        const statements = cleanSql
           .split(';')
           .map((stmt) => stmt.trim())
-          .filter((stmt) => stmt && !stmt.startsWith('--'));
+          .filter((stmt) => stmt.length > 0);
 
         // Execute each statement
         for (const statement of statements) {
