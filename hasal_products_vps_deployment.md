@@ -28,7 +28,7 @@ This guide will walk you through deploying your Inco Tech Solutions application 
 │             │                                       │
 │  ┌──────────▼──────────┐  ┌────────────────────┐  │
 │  │  Vue.js Frontend    │  │  Express.js API    │  │
-│  │  (Static Files)     │  │  Port 3000         │  │
+│  │  (Static Files)     │  │  Port 8000         │  │
 │  │  /client/dist/      │  │  /server/          │  │
 │  └─────────────────────┘  └──────────┬─────────┘  │
 │                                       │             │
@@ -171,6 +171,7 @@ sudo git clone https://github.com/mg4aca/inco-tech-solutions.git
 ```
 
 **⚠️ Important:** Make sure your final structure is:
+
 ```
 /var/www/inco-tech-solutions/
 ├── client/
@@ -180,6 +181,7 @@ sudo git clone https://github.com/mg4aca/inco-tech-solutions.git
 ```
 
 NOT:
+
 ```
 /var/www/inco-tech-solutions/inco-tech-solutions/  ❌ (Double nested - avoid this!)
 ```
@@ -254,7 +256,7 @@ DB_PASSWORD=Velou@123
 
 # Application
 NODE_ENV=production
-PORT=3000
+PORT=8000
 HOST=0.0.0.0
 
 # File Upload Path
@@ -292,7 +294,9 @@ mysql -u inco_tech_admin -p inco_tech_solutions < database/schema.sql
 
 **Note:** The schema.sql includes seed data for categories and sample products.
 
-### 5.5 Test Backend Locally
+### 5.5 Test Backend Locally (Optional)
+
+**⚠️ Note:** If you've already set up PM2 (step 5.6), skip this manual test as port 8000 will already be in use. Jump directly to testing via PM2 logs.
 
 ```bash
 # Make sure you're in the server directory
@@ -302,11 +306,24 @@ cd /var/www/inco-tech-solutions/server
 node server.js
 
 # In another terminal, test the API
-curl http://localhost:3000/api/products
-curl http://localhost:3000/api/categories
+curl http://localhost:8000/api/products
+curl http://localhost:8000/api/categories
 ```
 
 If successful, you should see JSON responses. Press `Ctrl+C` to stop.
+
+**If you get "EADDRINUSE: address already in use" error:**
+
+```bash
+# Check what's using port 8000
+sudo lsof -i :8000
+
+# If PM2 is running, stop it first
+pm2 stop inco-tech-backend
+
+# Or skip manual test and use PM2 logs instead (recommended)
+pm2 logs inco-tech-backend
+```
 
 ### 5.6 Set Up PM2 for Backend
 
@@ -418,7 +435,7 @@ Add this configuration:
 ```nginx
 # Upstream backend
 upstream inco_tech_backend {
-    server localhost:3000;
+    server localhost:8000;
     keepalive 64;
 }
 
@@ -573,8 +590,8 @@ pm2 status
 pm2 logs inco-tech-backend
 
 # Test API directly
-curl http://localhost:3000/api/products
-curl http://localhost:3000/api/categories
+curl http://localhost:8000/api/products
+curl http://localhost:8000/api/categories
 ```
 
 ### 9.2 Check Nginx
@@ -802,8 +819,8 @@ crontab -e
 pm2 logs inco-tech-backend
 
 # Common issues:
-# 1. Port 3000 already in use
-sudo lsof -i :3000
+# 1. Port 8000 already in use
+sudo lsof -i :8000
 sudo kill -9 <PID>
 
 # 2. Database connection failed
@@ -846,10 +863,10 @@ sudo systemctl restart nginx
 pm2 status
 pm2 restart inco-tech-backend
 
-# Check backend is listening on port 3000
-sudo netstat -tlnp | grep 3000
+# Check backend is listening on port 8000
+sudo netstat -tlnp | grep 8000
 # Or use:
-sudo lsof -i :3000
+sudo lsof -i :8000
 
 # Check backend logs for errors
 pm2 logs inco-tech-backend --err
@@ -978,7 +995,7 @@ module.exports = {
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 8000,
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',

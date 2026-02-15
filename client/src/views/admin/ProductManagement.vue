@@ -327,7 +327,7 @@
 
 <script setup>
 import { categoryAPI, productAPI } from '@/api';
-import { FilterMatchMode } from 'primevue/api';
+import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import ConfirmDialog from 'primevue/confirmdialog';
