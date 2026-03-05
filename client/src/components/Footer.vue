@@ -5,7 +5,12 @@
         <!-- Brand -->
         <div class="col-12 md:col-4 mb-4 md:mb-0">
           <div class="flex align-items-center gap-2 mb-3">
-            <i class="pi pi-desktop text-2xl" style="color: var(--inco-primary)"></i>
+            <img
+              src="/logo.png"
+              alt="Inco Tech Solutions"
+              class="logo-img"
+              style="height: 40px; width: auto"
+            />
             <span class="text-xl font-bold">
               Inco
               <span style="color: var(--inco-primary)">Tech</span>

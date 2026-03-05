@@ -4,10 +4,16 @@
       <div class="flex align-items-center justify-content-between py-3">
         <!-- Logo -->
         <router-link to="/" class="flex align-items-center gap-2 no-underline">
-          <i class="pi pi-desktop text-2xl" style="color: var(--inco-primary)"></i>
+          <img
+            src="/logo.png"
+            alt="Inco Tech Solutions"
+            class="logo-img"
+            style="height: 40px; width: auto"
+          />
           <span class="text-xl font-bold" style="color: var(--inco-text-primary)">
             Inco
             <span style="color: var(--inco-primary)">Tech</span>
+            Solutions
           </span>
         </router-link>
 

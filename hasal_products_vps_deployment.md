@@ -388,7 +388,7 @@ nano .env.production
 Add your production API URL:
 
 ```env
-VITE_API_BASE_URL=https://yourdomain.com/api
+VITE_API_BASE_URL=https://incotechsolutions.com/api
 # Or use IP if no domain: http://your_vps_ip/api
 ```
 
@@ -441,7 +441,7 @@ upstream inco_tech_backend {
 
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;  # Replace with your domain or VPS IP
+    server_name incotechsolutions.com www.incotechsolutions.com;  # Replace with your domain or VPS IP
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -538,7 +538,7 @@ sudo apt install certbot python3-certbot-nginx -y
 
 ```bash
 # Replace with your domain
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d incotechsolutions.com -d www.incotechsolutions.com
 ```
 
 Certbot will:
@@ -564,7 +564,7 @@ nano /var/www/inco-tech-solutions/client/.env.production
 Change to HTTPS:
 
 ```env
-VITE_API_BASE_URL=https://yourdomain.com/api
+VITE_API_BASE_URL=https://incotechsolutions.com/api
 ```
 
 Rebuild and redeploy frontend:
@@ -609,8 +609,8 @@ sudo tail -f /var/log/nginx/inco-tech-access.log
 
 Open your browser and visit:
 
-- 🌎 Frontend: `http://your_vps_ip` or `https://yourdomain.com`
-- 🔌 API Test: `http://your_vps_ip/api/products` or `https://yourdomain.com/api/products`
+- 🌎 Frontend: `http://your_vps_ip` or `https://incotechsolutions.com`
+- 🔌 API Test: `http://your_vps_ip/api/products` or `https://incotechsolutions.com/api/products`
 
 You should see your Inco Tech Solutions storefront with products!
 
@@ -1042,24 +1042,24 @@ Your **Inco Tech Solutions** Computer Retail & Repair Service is now live on Hos
 
 **Access your application at:**
 
-- 🌐 **Frontend:** `http://your_vps_ip` or `https://yourdomain.com`
-- 🔌 **Backend API:** `http://your_vps_ip/api` or `https://yourdomain.com/api`
-- 🖼️ **Product Images:** `http://your_vps_ip/uploads/` or `https://yourdomain.com/uploads/`
+- 🌐 **Frontend:** `http://your_vps_ip` or `https://incotechsolutions.com`
+- 🔌 **Backend API:** `http://your_vps_ip/api` or `https://incotechsolutions.com/api`
+- 🖼️ **Product Images:** `http://your_vps_ip/uploads/` or `https://incotechsolutions.com/uploads/`
 
 **Test endpoints:**
 
 ```bash
 # Get all products
-curl https://yourdomain.com/api/products
+curl https://incotechsolutions.com/api/products
 
 # Get all categories
-curl https://yourdomain.com/api/categories
+curl https://incotechsolutions.com/api/categories
 
 # Get single product
-curl https://yourdomain.com/api/products/1
+curl https://incotechsolutions.com/api/products/1
 
 # Submit repair request
-curl -X POST https://yourdomain.com/api/repairs \
+curl -X POST https://incotechsolutions.com/api/repairs \
   -H "Content-Type: application/json" \
   -d '{"user_name":"Test User","email":"test@email.com","phone":"1234567890","device_type":"laptop","device_model":"Test Model","issue_description":"Test issue"}'
 ```
