@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../config/db');
 const upload = require('../middleware/upload');
 const slugify = require('slugify');
+const { verifyToken } = require('../middleware/authenticate');
 
 // ─── GET ALL PRODUCTS (with filtering, search, pagination) ───
 router.get('/', async (req, res) => {
@@ -138,7 +139,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── CREATE PRODUCT ───
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const {
       name,
@@ -213,7 +214,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // ─── UPDATE PRODUCT ───
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     const fields = req.body;
@@ -291,7 +292,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 // ─── DELETE PRODUCT ───
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const [existing] = await pool.query('SELECT * FROM products WHERE id = ?', [id]);

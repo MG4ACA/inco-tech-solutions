@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
+const { verifyToken } = require('../middleware/authenticate');
 
 // ─── GET ALL REPAIR REQUESTS (with filtering) ───
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const { page = 1, limit = 20, status, urgency, search } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -59,7 +60,7 @@ router.get('/', async (req, res) => {
 });
 
 // ─── GET SINGLE REPAIR REQUEST ───
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM repair_requests WHERE id = ?', [req.params.id]);
 
@@ -132,7 +133,7 @@ router.post('/', async (req, res) => {
 });
 
 // ─── UPDATE REPAIR REQUEST (admin) ───
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { status, estimated_cost, admin_notes, urgency } = req.body;
@@ -179,7 +180,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // ─── GET REPAIR STATS (admin dashboard) ───
-router.get('/meta/stats', async (_req, res) => {
+router.get('/meta/stats', verifyToken, async (_req, res) => {
   try {
     const [statusCounts] = await pool.query(
       `SELECT status, COUNT(*) AS count FROM repair_requests GROUP BY status`,

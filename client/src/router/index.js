@@ -18,28 +18,38 @@ const routes = [
     props: true,
   },
   {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('@/views/admin/AdminLogin.vue'),
+  },
+  {
     path: '/admin',
     component: () => import('@/views/admin/AdminLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
         name: 'AdminDashboard',
         component: () => import('@/views/admin/Dashboard.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
       },
       {
         path: 'products',
         name: 'AdminProducts',
         component: () => import('@/views/admin/ProductManagement.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: 'categories',
         name: 'AdminCategories',
         component: () => import('@/views/admin/CategoryManagement.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
       },
       {
         path: 'repairs',
         name: 'AdminRepairs',
         component: () => import('@/views/admin/RepairRequests.vue'),
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -57,6 +67,25 @@ const router = createRouter({
     if (savedPosition) return savedPosition;
     return { top: 0 };
   },
+});
+
+// ─── Navigation Guard ───
+router.beforeEach((to, _from, next) => {
+  if (!to.meta.requiresAuth) return next();
+
+  const token = localStorage.getItem('admin_token');
+  const user = JSON.parse(localStorage.getItem('admin_user') || 'null');
+
+  if (!token || !user) {
+    return next({ name: 'AdminLogin' });
+  }
+
+  // Cashier cannot access admin-only pages
+  if (to.meta.adminOnly && user.role !== 'admin') {
+    return next({ name: 'AdminProducts' });
+  }
+
+  next();
 });
 
 export default router;

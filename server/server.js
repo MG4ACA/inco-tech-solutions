@@ -23,15 +23,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const repairRoutes = require('./routes/repairs');
+const authRoutes = require('./routes/auth');
 
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/repairs', repairRoutes);
 
 // ─── DASHBOARD STATS ───
 const pool = require('./config/db');
+const { verifyToken, requireAdmin } = require('./middleware/authenticate');
 
-app.get('/api/dashboard/stats', async (_req, res) => {
+app.get('/api/dashboard/stats', verifyToken, requireAdmin, async (_req, res) => {
   try {
     const [productCount] = await pool.query('SELECT COUNT(*) AS count FROM products');
     const [categoryCount] = await pool.query('SELECT COUNT(*) AS count FROM categories');

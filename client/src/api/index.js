@@ -8,6 +8,25 @@ const api = axios.create({
   },
 });
 
+// ─── Auth Token Interceptor ───
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('admin_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ─── Auth API ───
+export const authAPI = {
+  login(credentials) {
+    return api.post('/auth/login', credentials);
+  },
+  me() {
+    return api.get('/auth/me');
+  },
+};
+
 // ─── Products ───
 export const productAPI = {
   getAll(params = {}) {

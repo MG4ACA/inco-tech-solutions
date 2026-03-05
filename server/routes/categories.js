@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const slugify = require('slugify');
+const { verifyToken, requireAdmin } = require('../middleware/authenticate');
 
 // ─── GET ALL CATEGORIES ───
 router.get('/', async (_req, res) => {
@@ -47,7 +48,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── CREATE CATEGORY ───
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, requireAdmin, async (req, res) => {
   try {
     const { name, description, icon, sort_order } = req.body;
 
@@ -84,7 +85,7 @@ router.post('/', async (req, res) => {
 });
 
 // ─── UPDATE CATEGORY ───
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, icon, is_active, sort_order } = req.body;
@@ -140,7 +141,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // ─── DELETE CATEGORY ───
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
