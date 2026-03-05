@@ -80,14 +80,14 @@
               <!-- Price -->
               <div class="flex align-items-center gap-3">
                 <span class="text-4xl font-bold" style="color: var(--inco-primary-light)">
-                  ${{ formatPrice(product.price) }}
+                  Rs. {{ formatPrice(product.price) }}
                 </span>
                 <span
                   v-if="product.original_price && product.original_price > product.price"
                   class="text-xl line-through"
                   style="color: var(--inco-text-secondary)"
                 >
-                  ${{ formatPrice(product.original_price) }}
+                  Rs. {{ formatPrice(product.original_price) }}
                 </span>
                 <Tag
                   v-if="discountPercent > 0"
@@ -267,7 +267,7 @@ const specs = computed(() => {
 });
 
 function formatPrice(val) {
-  return Number(val).toLocaleString('en-US', {
+  return Number(val).toLocaleString('en-LK', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

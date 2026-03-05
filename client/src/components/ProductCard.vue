@@ -61,14 +61,14 @@
       <div class="flex align-items-center justify-content-between mt-auto">
         <div>
           <span class="text-xl font-bold" style="color: var(--inco-primary-light)">
-            ${{ formatPrice(product.price) }}
+            Rs. {{ formatPrice(product.price) }}
           </span>
           <span
             v-if="product.original_price && product.original_price > product.price"
             class="text-sm ml-2 line-through"
             style="color: var(--inco-text-secondary)"
           >
-            ${{ formatPrice(product.original_price) }}
+            Rs. {{ formatPrice(product.original_price) }}
           </span>
         </div>
         <Button
@@ -114,7 +114,7 @@ const discountPercent = computed(() => {
 });
 
 function formatPrice(val) {
-  return Number(val).toLocaleString('en-US', {
+  return Number(val).toLocaleString('en-LK', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

@@ -97,7 +97,7 @@
         <Column field="price" header="Price" sortable style="width: 120px">
           <template #body="{ data }">
             <span class="font-bold" style="color: var(--inco-primary-light)">
-              ${{ formatPrice(data.price) }}
+              Rs. {{ formatPrice(data.price) }}
             </span>
           </template>
         </Column>
@@ -180,7 +180,7 @@
           <InputNumber
             v-model="form.price"
             mode="currency"
-            currency="USD"
+            currency="LKR"
             class="w-full"
             inputClass="w-full"
             required
@@ -191,7 +191,7 @@
           <InputNumber
             v-model="form.original_price"
             mode="currency"
-            currency="USD"
+            currency="LKR"
             class="w-full"
             inputClass="w-full"
           />
@@ -555,7 +555,7 @@ async function toggleFeatured(product) {
 }
 
 function formatPrice(val) {
-  return Number(val).toLocaleString('en-US', {
+  return Number(val).toLocaleString('en-LK', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

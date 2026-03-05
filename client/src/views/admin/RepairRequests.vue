@@ -117,7 +117,13 @@
               class="font-bold"
               style="color: var(--inco-primary-light)"
             >
-              ${{ Number(data.estimated_cost).toFixed(2) }}
+              Rs.
+              {{
+                Number(data.estimated_cost).toLocaleString('en-LK', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              }}
             </span>
             <span v-else class="text-xs" style="color: var(--inco-text-secondary)">Not set</span>
           </template>
@@ -228,11 +234,11 @@
         </div>
 
         <div>
-          <label class="font-semibold text-sm block mb-1">Estimated Cost ($)</label>
+          <label class="font-semibold text-sm block mb-1">Estimated Cost (Rs.)</label>
           <InputNumber
             v-model="editForm.estimated_cost"
             mode="currency"
-            currency="USD"
+            currency="LKR"
             class="w-full"
             inputClass="w-full"
           />
