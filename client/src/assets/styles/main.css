@@ -722,3 +722,8 @@ a:hover {
 :root:not(.app-dark) .p-tag {
   font-weight: 600;
 }
+
+/* ─── Consistent tag text colour across both themes ─── */
+.p-tag {
+  color: var(--p-primary-700) !important;
+}

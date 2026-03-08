@@ -1,10 +1,10 @@
 <template>
   <div style="padding-top: 80px; min-height: 100vh; background: var(--inco-surface-dark)">
-    <div class="section-container py-5">
+    <div class="section-container py-3">
       <!-- Header -->
       <div class="flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
-          <h1 class="section-title text-3xl">Product Catalog</h1>
+          <!-- <h1 class="section-title text-3xl">Product Catalog</h1> -->
           <p class="section-subtitle mb-0">
             Showing {{ products.length }} of {{ totalProducts }} products
           </p>
