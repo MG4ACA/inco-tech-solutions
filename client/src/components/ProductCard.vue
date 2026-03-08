@@ -1,5 +1,5 @@
 <template>
-  <div class="cyber-card cursor-pointer" @click="goToProduct">
+  <div class="cyber-card cursor-pointer card-equal-height" @click="goToProduct">
     <!-- Image -->
     <div class="product-image-wrapper">
       <img v-if="product.image_url" :src="product.image_url" :alt="product.name" loading="lazy" />
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Content -->
-    <div class="p-3">
+    <div class="p-3 card-content">
       <!-- Category -->
       <div class="text-xs font-medium mb-1" style="color: var(--inco-primary-light)">
         {{ product.category_name || 'Uncategorized' }}
@@ -51,7 +51,7 @@
       </div>
 
       <!-- Key Specs -->
-      <div v-if="product.cpu || product.ram || product.storage" class="flex flex-wrap gap-1 mb-3">
+      <div v-if="product.cpu || product.ram || product.storage" class="flex flex-wrap gap-1">
         <Tag v-if="product.cpu" :value="product.cpu" severity="secondary" class="text-xs" />
         <Tag v-if="product.ram" :value="product.ram" severity="secondary" class="text-xs" />
         <Tag v-if="product.storage" :value="product.storage" severity="secondary" class="text-xs" />
@@ -131,5 +131,24 @@ function goToProduct() {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Equal-height card layout */
+.card-equal-height {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Push price row to the bottom regardless of how many spec tags exist */
+.card-content .flex.align-items-center.justify-content-between {
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 </style>

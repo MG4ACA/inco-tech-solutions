@@ -286,42 +286,106 @@
           />
         </div>
 
-        <!-- Image Upload -->
+        <!-- Image Management -->
         <div class="col-12">
-          <label class="font-semibold text-sm block mb-1">Product Image</label>
-          <FileUpload
-            mode="basic"
-            accept="image/*"
-            :maxFileSize="5000000"
-            chooseLabel="Choose Image"
-            class="w-full"
-            @select="onImageSelect"
-          />
-          <small class="text-xs" style="color: var(--inco-text-secondary)">
-            Max 5MB. JPEG, PNG, or WebP.
-          </small>
+          <label class="font-semibold text-sm block mb-2">Product Images</label>
+
+          <!-- Existing images (editing mode) -->
+          <div v-if="existingImages.length > 0" class="mb-3">
+            <p class="text-xs mb-2" style="color: var(--inco-text-secondary)">
+              Current Images — click
+              <i class="pi pi-times"></i>
+              to remove:
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="(url, idx) in existingImages" :key="url" class="img-thumb-wrapper">
+                <img :src="url" :alt="`Image ${idx + 1}`" class="img-thumb" />
+                <button
+                  type="button"
+                  class="img-remove-btn"
+                  @click="removeExistingImage(idx)"
+                  title="Remove"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- New images preview -->
+          <div v-if="newImageFiles.length > 0" class="mb-3">
+            <p class="text-xs mb-2" style="color: var(--inco-text-secondary)">Images to Upload:</p>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="(preview, idx) in newImagePreviews" :key="idx" class="img-thumb-wrapper">
+                <img :src="preview" :alt="`New ${idx + 1}`" class="img-thumb" />
+                <button
+                  type="button"
+                  class="img-remove-btn"
+                  @click="removeNewImage(idx)"
+                  title="Remove"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- File picker -->
+          <div class="flex align-items-center gap-3 flex-wrap">
+            <input
+              ref="imageFileInput"
+              type="file"
+              multiple
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              style="display: none"
+              @change="onImagesSelected"
+            />
+            <Button
+              type="button"
+              :label="
+                existingImages.length + newImageFiles.length > 0
+                  ? 'Add More Images'
+                  : 'Choose Images'
+              "
+              icon="pi pi-images"
+              class="p-button-outlined p-button-secondary"
+              @click="triggerFileInput"
+            />
+            <small class="text-xs" style="color: var(--inco-text-secondary)">
+              Max 5 MB each &middot; JPEG, PNG or WebP &middot; up to 10 images
+            </small>
+          </div>
         </div>
       </form>
 
       <template #footer>
-        <Button
-          label="Cancel"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="dialogVisible = false"
-        />
-        <Button
-          :label="isEditing ? 'Update' : 'Create'"
-          icon="pi pi-check"
-          class="btn-cyber"
-          @click="saveProduct"
-          :loading="saving"
-        />
+        <div class="flex justify-content-between w-full">
+          <Button
+            v-if="!isEditing"
+            label="Fill Sample Data"
+            icon="pi pi-bolt"
+            class="p-button-outlined p-button-secondary"
+            @click="populateSampleData"
+            v-tooltip.top="'Populate form with sample product data'"
+          />
+          <div class="flex gap-2 ml-auto">
+            <Button
+              label="Cancel"
+              icon="pi pi-times"
+              class="p-button-text"
+              @click="dialogVisible = false"
+            />
+            <Button
+              :label="isEditing ? 'Update' : 'Create'"
+              icon="pi pi-check"
+              class="btn-cyber"
+              @click="saveProduct"
+              :loading="saving"
+            />
+          </div>
+        </div>
       </template>
     </Dialog>
-
-    <!-- Confirm Delete -->
-    <ConfirmDialog />
   </div>
 </template>
 
@@ -330,10 +394,8 @@ import { categoryAPI, productAPI } from '@/api';
 import { FilterMatchMode } from '@primevue/core/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import ConfirmDialog from 'primevue/confirmdialog';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
-import FileUpload from 'primevue/fileupload';
 import InputNumber from 'primevue/inputnumber';
 import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
@@ -342,7 +404,7 @@ import Tag from 'primevue/tag';
 import Textarea from 'primevue/textarea';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -353,7 +415,47 @@ const loading = ref(true);
 const saving = ref(false);
 const dialogVisible = ref(false);
 const isEditing = ref(false);
-const selectedImage = ref(null);
+
+// Image management
+const imageFileInput = ref(null);
+const existingImages = ref([]); // current saved URLs when editing
+const newImageFiles = ref([]); // File objects staged for upload
+const newImagePreviews = ref([]); // Object URLs for previewing staged files
+
+function triggerFileInput() {
+  imageFileInput.value?.click();
+}
+
+function onImagesSelected(event) {
+  const files = Array.from(event.target.files);
+  for (const file of files) {
+    newImageFiles.value.push(file);
+    newImagePreviews.value.push(URL.createObjectURL(file));
+  }
+  event.target.value = ''; // allow re-selecting same file
+}
+
+function removeExistingImage(idx) {
+  existingImages.value.splice(idx, 1);
+}
+
+function removeNewImage(idx) {
+  URL.revokeObjectURL(newImagePreviews.value[idx]);
+  newImagePreviews.value.splice(idx, 1);
+  newImageFiles.value.splice(idx, 1);
+}
+
+function clearImageState() {
+  newImagePreviews.value.forEach((url) => URL.revokeObjectURL(url));
+  newImagePreviews.value = [];
+  newImageFiles.value = [];
+  existingImages.value = [];
+}
+
+// Clean up object URLs whenever the dialog is closed
+watch(dialogVisible, (visible) => {
+  if (!visible) clearImageState();
+});
 
 const tableFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -394,12 +496,156 @@ const defaultForm = {
 
 const form = reactive({ ...defaultForm });
 let editingId = null;
+let sampleDataIndex = 0;
+
+const sampleProducts = [
+  {
+    name: 'Dell XPS 15 9530',
+    description:
+      'Premium 15.6" laptop with Intel 13th Gen processor, perfect for professionals and creatives. Features a stunning OLED display and long battery life.',
+    price: 385000,
+    original_price: 420000,
+    condition_type: 'new',
+    status: 'in_stock',
+    brand: 'Dell',
+    model: 'XPS 15 9530',
+    cpu: 'Intel Core i7-13700H',
+    ram: '16GB DDR5 4800MHz',
+    storage: '512GB NVMe SSD',
+    gpu: 'NVIDIA GeForce RTX 4060 8GB',
+    display_spec: '15.6" OLED 3.5K Touch 120Hz',
+    os: 'Windows 11 Home',
+    battery: '86Wh, up to 13 hours',
+    warranty: '1 Year Manufacturer Warranty',
+    quantity: 5,
+    featured: true,
+  },
+  {
+    name: 'HP EliteBook 840 G10',
+    description:
+      'Business-class 14" laptop designed for corporate use. Military-grade durability with AI-powered noise cancellation and enterprise security features.',
+    price: 295000,
+    original_price: 320000,
+    condition_type: 'new',
+    status: 'in_stock',
+    brand: 'HP',
+    model: 'EliteBook 840 G10',
+    cpu: 'Intel Core i5-1335U',
+    ram: '16GB DDR5',
+    storage: '256GB NVMe SSD',
+    gpu: 'Intel Iris Xe Graphics',
+    display_spec: '14" FHD IPS Anti-Glare',
+    os: 'Windows 11 Pro',
+    battery: '51Wh, up to 12 hours',
+    warranty: '3 Years HP Care Pack',
+    quantity: 8,
+    featured: false,
+  },
+  {
+    name: 'Lenovo ThinkPad X1 Carbon Gen 11',
+    description:
+      'Ultra-lightweight 14" business flagship weighing just 1.12kg. Iconic ThinkPad keyboard with MIL-SPEC durability and all-day battery.',
+    price: 445000,
+    original_price: null,
+    condition_type: 'new',
+    status: 'in_stock',
+    brand: 'Lenovo',
+    model: 'ThinkPad X1 Carbon Gen 11',
+    cpu: 'Intel Core i7-1365U vPro',
+    ram: '32GB LPDDR5',
+    storage: '1TB NVMe SSD',
+    gpu: 'Intel Iris Xe Graphics',
+    display_spec: '14" 2.8K OLED 90Hz',
+    os: 'Windows 11 Pro',
+    battery: '57Wh, up to 15 hours',
+    warranty: '3 Years Lenovo Premier Support',
+    quantity: 3,
+    featured: true,
+  },
+  {
+    name: 'ASUS ROG Strix G16 2024',
+    description:
+      'High-performance gaming laptop with AMD Ryzen 9 processor and RTX 4070. Designed for serious gamers with advanced cooling and RGB lighting.',
+    price: 520000,
+    original_price: 560000,
+    condition_type: 'new',
+    status: 'in_stock',
+    brand: 'ASUS',
+    model: 'ROG Strix G16 G614',
+    cpu: 'AMD Ryzen 9 7945HX',
+    ram: '16GB DDR5 4800MHz',
+    storage: '1TB NVMe SSD PCIe 4.0',
+    gpu: 'NVIDIA GeForce RTX 4070 8GB',
+    display_spec: '16" QHD+ 240Hz IPS',
+    os: 'Windows 11 Home',
+    battery: '90Wh',
+    warranty: '2 Years ASUS Warranty',
+    quantity: 4,
+    featured: true,
+  },
+  {
+    name: 'Apple MacBook Pro 14" M3',
+    description:
+      'Supercharged by the M3 chip, the MacBook Pro delivers exceptional performance for developers and creative professionals in a compact 14" form.',
+    price: 650000,
+    original_price: null,
+    condition_type: 'new',
+    status: 'in_stock',
+    brand: 'Apple',
+    model: 'MacBook Pro 14 M3',
+    cpu: 'Apple M3 (8-core CPU)',
+    ram: '8GB Unified Memory',
+    storage: '512GB SSD',
+    gpu: 'Apple M3 10-core GPU',
+    display_spec: '14.2" Liquid Retina XDR 120Hz',
+    os: 'macOS Sonoma',
+    battery: '70Wh, up to 18 hours',
+    warranty: '1 Year Apple Limited Warranty',
+    quantity: 6,
+    featured: false,
+  },
+  {
+    name: 'Acer Aspire 5 A515 Refurbished',
+    description:
+      'Professionally refurbished mid-range laptop in excellent condition. Great value for students and everyday computing needs.',
+    price: 95000,
+    original_price: 145000,
+    condition_type: 'refurbished',
+    status: 'in_stock',
+    brand: 'Acer',
+    model: 'Aspire 5 A515-56',
+    cpu: 'Intel Core i5-1135G7',
+    ram: '8GB DDR4',
+    storage: '256GB SSD',
+    gpu: 'Intel Iris Xe Graphics',
+    display_spec: '15.6" FHD IPS',
+    os: 'Windows 11 Home',
+    battery: '48Wh, up to 8 hours',
+    warranty: '6 Months Inco Tech Warranty',
+    quantity: 2,
+    featured: false,
+  },
+];
+
+function populateSampleData() {
+  const sample = sampleProducts[sampleDataIndex % sampleProducts.length];
+  sampleDataIndex++;
+  const categoryMatch = categories.value.find((c) =>
+    sample.brand === 'Apple'
+      ? c.name?.toLowerCase().includes('mac')
+      : c.name?.toLowerCase().includes('laptop'),
+  );
+  Object.assign(form, {
+    ...sample,
+    category_id: categoryMatch?.id ?? form.category_id,
+  });
+}
 
 function openNew() {
   Object.assign(form, { ...defaultForm });
   editingId = null;
   isEditing.value = false;
-  selectedImage.value = null;
+  clearImageState();
   dialogVisible.value = true;
 }
 
@@ -427,12 +673,18 @@ function editProduct(product) {
   });
   editingId = product.id;
   isEditing.value = true;
-  selectedImage.value = null;
-  dialogVisible.value = true;
-}
 
-function onImageSelect(event) {
-  selectedImage.value = event.files[0];
+  // Populate existing images
+  const imgs = Array.isArray(product.images)
+    ? product.images
+    : product.images
+      ? JSON.parse(product.images)
+      : [];
+  existingImages.value = imgs.length > 0 ? [...imgs] : product.image_url ? [product.image_url] : [];
+  newImageFiles.value = [];
+  newImagePreviews.value = [];
+
+  dialogVisible.value = true;
 }
 
 async function saveProduct() {
@@ -454,8 +706,11 @@ async function saveProduct() {
         formData.append(key, val);
       }
     });
-    if (selectedImage.value) {
-      formData.append('image', selectedImage.value);
+    // Attach new image files
+    newImageFiles.value.forEach((file) => formData.append('images', file));
+    // Tell the server which existing images to keep (editing only)
+    if (isEditing.value) {
+      formData.append('keep_images', JSON.stringify(existingImages.value));
     }
 
     if (isEditing.value) {
@@ -596,3 +851,45 @@ onMounted(async () => {
   fetchProducts();
 });
 </script>
+
+<style scoped>
+.img-thumb-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.img-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  border: 2px solid var(--inco-border, #334155);
+}
+
+.img-remove-btn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.img-remove-btn:hover {
+  background: #b91c1c;
+}
+</style>

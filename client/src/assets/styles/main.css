@@ -223,15 +223,14 @@ a:hover {
 
 /* ─── Badge / Tag Styles ─── */
 .tag-new {
-  background: linear-gradient(135deg, #10b981, #059669) !important;
+  background: linear-gradient(135deg, #bceaffdb, #47c6ffc9) !important;
 }
-
 .tag-refurbished {
   background: linear-gradient(135deg, #f59e0b, #d97706) !important;
 }
 
 .tag-in-stock {
-  background: linear-gradient(135deg, #10b981, #059669) !important;
+  background: linear-gradient(135deg, #dcddf5d9, #c7c7c7f2) !important;
 }
 
 .tag-out-of-stock {

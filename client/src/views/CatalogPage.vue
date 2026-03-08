@@ -175,6 +175,7 @@
               v-for="product in products"
               :key="product.id"
               :class="layout === 'grid' ? 'col-12 sm:col-6 xl:col-4' : 'col-12'"
+              style="display: flex"
             >
               <ProductCard :product="product" />
             </div>

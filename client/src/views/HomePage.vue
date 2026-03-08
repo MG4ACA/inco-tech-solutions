@@ -22,6 +22,7 @@
             v-for="product in featuredProducts"
             :key="product.id"
             class="col-12 sm:col-6 lg:col-3"
+            style="display: flex"
           >
             <ProductCard :product="product" />
           </div>

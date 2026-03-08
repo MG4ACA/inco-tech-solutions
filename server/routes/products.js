@@ -3,7 +3,31 @@ const router = express.Router();
 const pool = require('../config/db');
 const upload = require('../middleware/upload');
 const slugify = require('slugify');
+const fs = require('fs');
+const path = require('path');
 const { verifyToken } = require('../middleware/authenticate');
+
+// Delete a single image file from disk (silently ignores missing files)
+function deleteImageFile(imageUrl) {
+  if (!imageUrl) return;
+  const filename = path.basename(imageUrl);
+  const uploadDir = path.join(__dirname, '..', process.env.UPLOAD_DIR || 'uploads');
+  const filepath = path.join(uploadDir, filename);
+  fs.unlink(filepath, (err) => {
+    if (err && err.code !== 'ENOENT') {
+      console.error('Failed to delete image file:', filepath, err.message);
+    }
+  });
+}
+
+// Extract all image URLs stored on a product row
+function getProductImages(product) {
+  if (product.images) {
+    const arr = Array.isArray(product.images) ? product.images : JSON.parse(product.images);
+    return arr.filter(Boolean);
+  }
+  return product.image_url ? [product.image_url] : [];
+}
 
 // ─── GET ALL PRODUCTS (with filtering, search, pagination) ───
 router.get('/', async (req, res) => {
@@ -139,7 +163,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── CREATE PRODUCT ───
-router.post('/', verifyToken, upload.single('image'), async (req, res) => {
+router.post('/', verifyToken, upload.array('images', 10), async (req, res) => {
   try {
     const {
       name,
@@ -170,13 +194,15 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     }
 
     const slug = slugify(name, { lower: true, strict: true }) + '-' + Date.now();
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const uploadedUrls = (req.files || []).map((f) => `/uploads/${f.filename}`);
+    const image_url = uploadedUrls.length > 0 ? uploadedUrls[0] : null;
+    const images = uploadedUrls.length > 0 ? JSON.stringify(uploadedUrls) : null;
 
     const [result] = await pool.query(
       `INSERT INTO products (name, slug, description, price, original_price, category_id,
         condition_type, status, brand, model, cpu, ram, storage, gpu, display_spec, os,
-        battery, warranty, image_url, featured, quantity)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        battery, warranty, image_url, images, featured, quantity)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         slug,
@@ -197,6 +223,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
         battery || null,
         warranty || null,
         image_url,
+        images,
         featured === 'true' || featured === true ? 1 : 0,
         parseInt(quantity) || 0,
       ],
@@ -214,10 +241,10 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
 });
 
 // ─── UPDATE PRODUCT ───
-router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
+router.put('/:id', verifyToken, upload.array('images', 10), async (req, res) => {
   try {
     const { id } = req.params;
-    const fields = req.body;
+    const fields = { ...req.body };
 
     // Check product exists
     const [existing] = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
@@ -225,9 +252,35 @@ router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    if (req.file) {
-      fields.image_url = `/uploads/${req.file.filename}`;
+    // Handle image updates
+    const newFiles = req.files || [];
+    if (newFiles.length > 0 || fields.keep_images !== undefined) {
+      // Parse which existing images to retain
+      let keepImages;
+      if (fields.keep_images !== undefined) {
+        try {
+          keepImages = JSON.parse(fields.keep_images);
+        } catch {
+          keepImages = [];
+        }
+      } else {
+        keepImages = getProductImages(existing[0]);
+      }
+
+      // Delete image files that were removed by the admin
+      const currentImages = getProductImages(existing[0]);
+      for (const url of currentImages) {
+        if (!keepImages.includes(url)) deleteImageFile(url);
+      }
+
+      // Merge retained images with newly uploaded ones
+      const newUrls = newFiles.map((f) => `/uploads/${f.filename}`);
+      const allImages = [...keepImages, ...newUrls];
+      fields.image_url = allImages.length > 0 ? allImages[0] : null;
+      fields.images = allImages.length > 0 ? JSON.stringify(allImages) : null;
     }
+
+    delete fields.keep_images;
 
     if (fields.name && fields.name !== existing[0].name) {
       fields.slug = slugify(fields.name, { lower: true, strict: true }) + '-' + Date.now();
@@ -254,6 +307,7 @@ router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
       'battery',
       'warranty',
       'image_url',
+      'images',
       'featured',
       'quantity',
     ];
@@ -299,6 +353,12 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     if (existing.length === 0) {
       return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    // Delete all associated image files from disk before removing the DB record
+    const imageUrls = getProductImages(existing[0]);
+    for (const url of imageUrls) {
+      deleteImageFile(url);
     }
 
     await pool.query('DELETE FROM products WHERE id = ?', [id]);

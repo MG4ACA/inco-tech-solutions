@@ -38,13 +38,27 @@
         </div>
 
         <div class="grid">
-          <!-- Image -->
+          <!-- Image Gallery -->
           <div class="col-12 md:col-6">
             <div class="cyber-card overflow-hidden">
+              <!-- Main image -->
               <div class="product-image-wrapper" style="aspect-ratio: 4/3">
-                <img v-if="product.image_url" :src="product.image_url" :alt="product.name" />
+                <img v-if="activeImage" :src="activeImage" :alt="product.name" />
                 <div v-else class="product-no-image">
                   <i class="pi pi-desktop" style="font-size: 5rem"></i>
+                </div>
+              </div>
+
+              <!-- Thumbnails (only shown when there is more than one image) -->
+              <div v-if="productImages.length > 1" class="flex gap-2 p-3 flex-wrap">
+                <div
+                  v-for="(url, idx) in productImages"
+                  :key="idx"
+                  class="product-thumb"
+                  :class="{ 'product-thumb--active': activeImage === url }"
+                  @click="activeImage = url"
+                >
+                  <img :src="url" :alt="`Image ${idx + 1}`" class="product-thumb-img" />
                 </div>
               </div>
             </div>
@@ -186,7 +200,12 @@
         <div v-if="product.related && product.related.length" class="mt-6">
           <h2 class="section-title text-2xl mb-4">Related Products</h2>
           <div class="grid">
-            <div v-for="rp in product.related" :key="rp.id" class="col-12 sm:col-6 lg:col-3">
+            <div
+              v-for="rp in product.related"
+              :key="rp.id"
+              class="col-12 sm:col-6 lg:col-3"
+              style="display: flex"
+            >
               <ProductCard :product="rp" />
             </div>
           </div>
@@ -225,6 +244,16 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const product = ref(null);
 const loading = ref(true);
+const activeImage = ref(null);
+
+// All image URLs for this product (falls back to image_url for legacy records)
+const productImages = computed(() => {
+  if (!product.value) return [];
+  if (Array.isArray(product.value.images) && product.value.images.length > 0) {
+    return product.value.images;
+  }
+  return product.value.image_url ? [product.value.image_url] : [];
+});
 
 const statusLabel = computed(() => {
   if (!product.value) return '';
@@ -276,9 +305,18 @@ function formatPrice(val) {
 async function loadProduct(slug) {
   loading.value = true;
   product.value = null;
+  activeImage.value = null;
   try {
     const res = await productAPI.getOne(slug);
     product.value = res.data.data;
+    // Set initial active image after product is loaded
+    const imgs =
+      Array.isArray(product.value.images) && product.value.images.length > 0
+        ? product.value.images
+        : product.value.image_url
+          ? [product.value.image_url]
+          : [];
+    activeImage.value = imgs.length > 0 ? imgs[0] : null;
   } catch (err) {
     console.error('Failed to load product:', err);
   } finally {
@@ -297,3 +335,31 @@ onMounted(() => {
   if (route.params.slug) loadProduct(route.params.slug);
 });
 </script>
+
+<style scoped>
+.product-thumb {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.product-thumb:hover {
+  border-color: var(--inco-primary-light, #60a5fa);
+}
+
+.product-thumb--active {
+  border-color: var(--inco-primary-light, #60a5fa);
+}
+
+.product-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+</style>
