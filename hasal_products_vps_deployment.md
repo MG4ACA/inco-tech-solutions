@@ -640,7 +640,7 @@ cd /var/www/inco-tech-solutions
 # Pull latest changes from Git
 echo "📥 Pulling latest changes from repository..."
 git fetch --all
-git pull origin main  # Change to 'dev' if using development branch
+git pull origin development  # Change to 'dev' if using development branch
 
 # Check if pull was successful
 if [ $? -ne 0 ]; then
