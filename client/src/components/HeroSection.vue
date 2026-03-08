@@ -135,7 +135,7 @@
               />
               <div class="hero-float-info">
                 <span class="hero-float-name">ThinkPad X1</span>
-                <span class="hero-float-price">$1,549</span>
+                <!-- <span class="hero-float-price">$1,549</span> -->
               </div>
             </div>
 
@@ -147,7 +147,7 @@
               />
               <div class="hero-float-info">
                 <span class="hero-float-name">MacBook Pro</span>
-                <span class="hero-float-price">$2,199</span>
+                <!-- <span class="hero-float-price">$2,199</span> -->
               </div>
             </div>
 

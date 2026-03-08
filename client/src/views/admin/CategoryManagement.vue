@@ -323,7 +323,12 @@ async function fetchCategories() {
     const res = await categoryAPI.getAll();
     categories.value = res.data.data.map((c) => ({ ...c, is_active: !!c.is_active }));
   } catch (err) {
-    console.error('Failed to fetch categories:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Load',
+      detail: err?.response?.data?.message || 'Could not load categories.',
+      life: 4000,
+    });
   } finally {
     loading.value = false;
   }

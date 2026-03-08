@@ -393,7 +393,12 @@ async function fetchRepairs() {
     const res = await repairAPI.getAll(params);
     repairs.value = res.data.data;
   } catch (err) {
-    console.error('Failed to fetch repairs:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Load',
+      detail: err?.response?.data?.message || 'Could not load repair requests.',
+      life: 4000,
+    });
   } finally {
     loading.value = false;
   }

@@ -34,10 +34,6 @@
             size="small"
             @click="$emit('openRepair')"
           />
-          <router-link to="/admin" class="nav-link" active-class="nav-active">
-            <i class="pi pi-cog mr-1"></i>
-            Admin
-          </router-link>
           <Button
             :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
             class="p-button-text p-button-rounded"
@@ -65,10 +61,6 @@
             <router-link to="/catalog" class="nav-link" @click="mobileOpen = false">
               <i class="pi pi-shopping-bag mr-2"></i>
               Shop
-            </router-link>
-            <router-link to="/admin" class="nav-link" @click="mobileOpen = false">
-              <i class="pi pi-cog mr-2"></i>
-              Admin
             </router-link>
             <Button
               label="Repair My Device"

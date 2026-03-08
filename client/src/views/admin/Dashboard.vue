@@ -106,7 +106,10 @@
 import { dashboardAPI } from '@/api';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
+import { useToast } from 'primevue/usetoast';
 import { computed, onMounted, ref } from 'vue';
+
+const toast = useToast();
 
 const loading = ref(true);
 const stats = ref({});
@@ -138,7 +141,7 @@ const statCards = computed(() => [
   },
   {
     label: 'Inventory Value',
-    value: `$${Number(stats.value.inventoryValue || 0).toLocaleString()}`,
+    value: `LKR${Number(stats.value.inventoryValue || 0).toLocaleString()}`,
     icon: 'pi pi-dollar',
     bg: 'rgba(16, 185, 129, 0.15)',
     color: '#10b981',
@@ -157,7 +160,12 @@ onMounted(async () => {
     const res = await dashboardAPI.getStats();
     stats.value = res.data.data;
   } catch (err) {
-    console.error('Failed to load dashboard stats:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Load',
+      detail: err?.response?.data?.message || 'Could not load dashboard stats.',
+      life: 4000,
+    });
   } finally {
     loading.value = false;
   }

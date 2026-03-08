@@ -77,14 +77,17 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Password from 'primevue/password';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const { login } = useAuth();
 
 const form = ref({ username: '', password: '' });
 const loading = ref(false);
-const errorMsg = ref('');
+const errorMsg = ref(
+  route.query.reason === 'session_expired' ? 'Your session has expired. Please sign in again.' : '',
+);
 
 async function handleLogin() {
   errorMsg.value = '';

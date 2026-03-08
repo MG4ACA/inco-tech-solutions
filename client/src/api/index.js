@@ -1,3 +1,4 @@
+import router from '@/router';
 import axios from 'axios';
 
 const api = axios.create({
@@ -16,6 +17,22 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// ─── Handle Expired / Invalid Token ───
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      // Only redirect if currently inside an admin route
+      if (router.currentRoute.value.path.startsWith('/admin')) {
+        router.push({ name: 'AdminLogin', query: { reason: 'session_expired' } });
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 // ─── Auth API ───
 export const authAPI = {

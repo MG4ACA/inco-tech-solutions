@@ -570,7 +570,12 @@ async function fetchProducts() {
       featured: !!p.featured,
     }));
   } catch (err) {
-    console.error('Failed to fetch products:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Load',
+      detail: err?.response?.data?.message || 'Could not load products.',
+      life: 4000,
+    });
   } finally {
     loading.value = false;
   }
@@ -581,7 +586,12 @@ onMounted(async () => {
     const catRes = await categoryAPI.getAll();
     categories.value = catRes.data.data;
   } catch (err) {
-    console.error('Failed to fetch categories:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Load',
+      detail: err?.response?.data?.message || 'Could not load categories.',
+      life: 4000,
+    });
   }
   fetchProducts();
 });

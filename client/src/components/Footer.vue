@@ -64,15 +64,15 @@
           <div class="flex flex-column gap-2">
             <div class="flex align-items-center gap-2 footer-link">
               <i class="pi pi-map-marker" style="color: var(--inco-primary-light)"></i>
-              123 Tech Street, Digital City, DC 10001
+              93 Morris Road, Milidduwa, Galle
             </div>
             <div class="flex align-items-center gap-2 footer-link">
               <i class="pi pi-phone" style="color: var(--inco-primary-light)"></i>
-              +1 (555) 123-4567
+              +94 777 402 124
             </div>
             <div class="flex align-items-center gap-2 footer-link">
               <i class="pi pi-envelope" style="color: var(--inco-primary-light)"></i>
-              info@incotechsolutions.com
+              incosolutions27@gmail.com
             </div>
             <div class="flex align-items-center gap-2 footer-link">
               <i class="pi pi-clock" style="color: var(--inco-primary-light)"></i>

@@ -59,7 +59,7 @@
       <!-- Phone -->
       <div class="flex flex-column gap-1">
         <label for="repair-phone" class="font-semibold text-sm">Phone Number</label>
-        <InputText id="repair-phone" v-model="form.phone" placeholder="+1 (555) 000-0000" />
+        <InputText id="repair-phone" v-model="form.phone" placeholder="07XX XXX XXX" />
       </div>
 
       <!-- Device Type & Brand -->
