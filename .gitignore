@@ -90,6 +90,7 @@ client/out/
 # =====================================================
 *.sql
 !database/schema.sql
+!server/migrations/*.sql
 database/backups/
 .mysql_history
 
