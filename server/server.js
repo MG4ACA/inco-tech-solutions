@@ -24,11 +24,18 @@ const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const repairRoutes = require('./routes/repairs');
 const authRoutes = require('./routes/auth');
+const seoRoutes = require('./routes/seo');
+const sitemapRouter = require('./routes/sitemap');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/repairs', repairRoutes);
+app.use('/api/seo', seoRoutes);
+
+// ─── SITEMAP & ROBOTS (root-level, no /api prefix) ───
+app.use('/', sitemapRouter);
+
 
 // ─── DASHBOARD STATS ───
 const pool = require('./config/db');

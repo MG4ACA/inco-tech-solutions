@@ -51,7 +51,19 @@ const routes = [
         component: () => import('@/views/admin/RepairRequests.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'seo',
+        name: 'AdminSeo',
+        component: () => import('@/views/admin/SeoManagement.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
+      },
     ],
+  },
+  // ─── SEO / AEO / GEO Discovery Pages ───
+  {
+    path: '/repair/:city',
+    name: 'DiscoveryPage',
+    component: () => import('@/views/DiscoveryPage.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

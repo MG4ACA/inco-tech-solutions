@@ -88,10 +88,11 @@ const router = useRouter();
 const { user, isAdmin, logout } = useAuth();
 
 const allMenuItems = [
-  { label: 'Dashboard', icon: 'pi pi-chart-bar', route: '/admin', adminOnly: true },
-  { label: 'Products', icon: 'pi pi-box', route: '/admin/products', adminOnly: false },
-  { label: 'Categories', icon: 'pi pi-tags', route: '/admin/categories', adminOnly: true },
-  { label: 'Repair Requests', icon: 'pi pi-wrench', route: '/admin/repairs', adminOnly: false },
+  { label: 'Dashboard',      icon: 'pi pi-chart-bar', route: '/admin',          adminOnly: true  },
+  { label: 'Products',       icon: 'pi pi-box',        route: '/admin/products', adminOnly: false },
+  { label: 'Categories',     icon: 'pi pi-tags',       route: '/admin/categories', adminOnly: true },
+  { label: 'Repair Requests',icon: 'pi pi-wrench',     route: '/admin/repairs',  adminOnly: false },
+  { label: 'SEO Manager',    icon: 'pi pi-globe',      route: '/admin/seo',      adminOnly: true  },
 ];
 
 const visibleMenuItems = computed(() =>
