@@ -121,9 +121,17 @@ Allow: /repair/
 Allow: /catalog
 Allow: /product/
 
-# Block admin and API from crawlers
+# Allow public APIs — Googlebot needs these to render product/city pages via JavaScript
+Allow: /api/products
+Allow: /api/categories
+Allow: /api/seo
+
+# Block sensitive/admin endpoints from crawlers
 Disallow: /admin/
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/repairs/
+Disallow: /api/dashboard/
+Disallow: /api/settings/
 
 # Block search/filter query params from being indexed as duplicate pages
 Disallow: /catalog?*
