@@ -101,6 +101,18 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+// ─── SPA FALLBACK ─── (must be after all API routes)
+// For normal users hitting /product/:slug, /repair/:city, /catalog, etc.
+// Bots are already handled above by botMetaInjector.
+// express.static serves known files; this catch-all handles Vue Router routes.
+app.get('*', (_req, res) => {
+  const indexPath = path.join(__dirname, '..', 'client', 'dist', 'index.html');
+  if (require('fs').existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.status(503).send('Application is not built yet. Run: cd client && npm run build');
+});
+
 // ─── ERROR HANDLING ───
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
@@ -111,6 +123,7 @@ app.use((err, _req, res, _next) => {
   }
   res.status(500).json({ success: false, message: err.message || 'Internal server error' });
 });
+
 
 // ─── START SERVER ───
 app.listen(PORT, () => {
