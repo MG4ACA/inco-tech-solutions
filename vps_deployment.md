@@ -19,30 +19,37 @@ This guide will walk you through deploying your Inco Tech Solutions application 
 ## 🎯 Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────┐
-│            Hostinger VPS Server                     │
-│                                                     │
-│  ┌──────────────────────────────────────────┐      │
-│  │  Nginx (Reverse Proxy) Port 80/443      │      │
-│  └──────────┬───────────────────────────────┘      │
-│             │                                       │
-│  ┌──────────▼──────────┐  ┌────────────────────┐  │
-│  │  Vue.js Frontend    │  │  Express.js API    │  │
-│  │  (Static Files)     │  │  Port 8000         │  │
-│  │  /client/dist/      │  │  /server/          │  │
-│  └─────────────────────┘  └──────────┬─────────┘  │
-│                                       │             │
-│  ┌────────────────────────────────────▼──────────┐ │
-│  │  Monorepo: inco-tech-solutions                │ │
-│  │  ├── client/  (Vue.js App)                    │ │
-│  │  ├── server/  (Express.js API)                │ │
-│  │  └── database/ (SQL Schema)                   │ │
-│  └───────────────────────────────────────────────┘ │
-│                          ┌──────────────────────┐  │
-│                          │   MySQL Database     │  │
-│                          │  inco_tech_solutions │  │
-│                          └──────────────────────┘  │
-└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                   Hostinger VPS Server                      │
+│                                                             │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │           Nginx (Reverse Proxy) Port 80/443           │  │
+│  └────────────────────────┬──────────────────────────────┘  │
+│                            │ ALL traffic proxied             │
+│  ┌─────────────────────────▼────────────────────────────┐   │
+│  │          Express.js API  Port 8000                   │   │
+│  │                                                      │   │
+│  │  ┌─────────────────┐   ┌──────────────────────────┐ │   │
+│  │  │ botMetaInjector │   │  API Routes (/api/*)      │ │   │
+│  │  │ (Googlebot →    │   │  products, categories,   │ │   │
+│  │  │  inject meta)   │   │  repairs, seo, sitemap   │ │   │
+│  │  └─────────────────┘   └──────────────────────────┘ │   │
+│  │  ┌──────────────────────────────────────────────┐   │   │
+│  │  │  express.static → client/dist/ (Vue SPA)     │   │   │
+│  │  └──────────────────────────────────────────────┘   │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  Monorepo: inco-tech-solutions                        │  │
+│  │  ├── client/  (Vue.js App → built to client/dist/)    │  │
+│  │  ├── server/  (Express.js API + botMetaInjector)      │  │
+│  │  └── database/ (SQL Schema)                           │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                          ┌──────────────────────┐           │
+│                          │   MySQL Database     │           │
+│                          │  inco_tech_solutions │           │
+│                          └──────────────────────┘           │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -306,8 +313,8 @@ cd /var/www/inco-tech-solutions/server
 node server.js
 
 # In another terminal, test the API
-curl http://localhost:5005/api/products
-curl http://localhost:5005/api/categories
+curl http://localhost:8000/api/products
+curl http://localhost:8000/api/categories
 ```
 
 If successful, you should see JSON responses. Press `Ctrl+C` to stop.
@@ -316,7 +323,7 @@ If successful, you should see JSON responses. Press `Ctrl+C` to stop.
 
 ```bash
 # Check what's using port 8000
-sudo lsof -i :5005
+sudo lsof -i :8000
 
 # If PM2 is running, stop it first
 pm2 stop inco-tech-backend
@@ -433,15 +440,15 @@ sudo nano /etc/nginx/sites-available/inco-tech-solutions
 Add this configuration:
 
 ```nginx
-# Upstream backend
+# Upstream backend — Express handles EVERYTHING (API + SPA + bot meta injection)
 upstream inco_tech_backend {
-    server localhost:5005;
+    server localhost:8000;
     keepalive 64;
 }
 
 server {
     listen 80;
-    server_name incotechsolutions.com www.incotechsolutions.com;  # Replace with your domain or VPS IP
+    server_name incotechsolutions.com www.incotechsolutions.com;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -452,51 +459,55 @@ server {
     # Max upload size (for product images)
     client_max_body_size 10M;
 
-    # Frontend - Serve Vue.js app
-    location / {
-        root /var/www/inco-tech-solutions/dist;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-
-        # Cache static assets
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-    }
-
-    # Backend API - Proxy to Express.js
-    location /api/ {
-        proxy_pass http://inco_tech_backend/api/;
+    # ─── Sitemap & Robots — served by Express ───────────────────
+    location = /sitemap.xml {
+        proxy_pass http://inco_tech_backend/sitemap.xml;
         proxy_http_version 1.1;
-
-        # Headers
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeouts
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-
-        # Disable cache for API
-        proxy_cache_bypass $http_upgrade;
+        add_header Content-Type "application/xml; charset=utf-8";
+    }
+    location = /robots.txt {
+        proxy_pass http://inco_tech_backend/robots.txt;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # Serve uploaded files (product images)
+    # ─── Uploaded images (served directly by Nginx for speed) ───
     location /uploads/ {
         alias /var/www/inco-tech-solutions/server/uploads/;
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
 
+    # ─── ALL other traffic → Express ────────────────────────────
+    # Express serves:
+    #   • /api/*          → API routes
+    #   • /product/:slug  → injects SEO meta for Googlebot, SPA for users
+    #   • /repair/:city   → injects SEO meta for Googlebot, SPA for users
+    #   • /catalog, /     → injects SEO meta for Googlebot, SPA for users
+    #   • *.js, *.css     → static assets from client/dist/
+    location / {
+        proxy_pass         http://inco_tech_backend;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        'upgrade';
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout    60s;
+        proxy_read_timeout    60s;
+        proxy_cache_bypass $http_upgrade;
+    }
+
     # Logs
     access_log /var/log/nginx/inco-tech-access.log;
-    error_log /var/log/nginx/inco-tech-error.log;
+    error_log  /var/log/nginx/inco-tech-error.log;
 }
 ```
 
@@ -590,8 +601,15 @@ pm2 status
 pm2 logs inco-tech-backend
 
 # Test API directly
-curl http://localhost:5005/api/products
-curl http://localhost:5005/api/categories
+curl http://localhost:8000/api/products
+curl http://localhost:8000/api/categories
+
+# Test SEO bot injection (Googlebot UA)
+curl -A "Googlebot/2.1 (+http://www.google.com/bot.html)" http://localhost:8000/product/YOUR-PRODUCT-SLUG | grep "<title>"
+# Expected: <title>PRODUCT NAME | Brand New | Inco Tech Solutions</title>
+
+# Check cache header (should show X-Bot-Cache: MISS on first hit, HIT on repeat)
+curl -I -A "Googlebot/2.1" https://incotechsolutions.com/repair/galle
 ```
 
 ### 9.2 Check Nginx
@@ -640,7 +658,7 @@ cd /var/www/inco-tech-solutions
 # Pull latest changes from Git
 echo "📥 Pulling latest changes from repository..."
 git fetch --all
-git pull origin development  # Change to 'dev' if using development branch
+git pull origin development  # Change to 'main' if using main branch
 
 # Check if pull was successful
 if [ $? -ne 0 ]; then
@@ -662,27 +680,21 @@ pm2 restart inco-tech-backend
 # Check backend status
 pm2 status inco-tech-backend
 
-# Frontend deployment
+# Frontend build
 echo ""
-echo "🎨 Deploying Frontend..."
+echo "🎨 Building Frontend..."
 echo "----------------------"
 cd ../client
-
-# Install dependencies
 npm install
-
-# Build for production
 echo "📦 Building Vue.js application..."
 npm run build
+# Note: No need to copy dist/ — Express serves client/dist/ directly
+# The built files are used by both Express static middleware and botMetaInjector
 
-# Copy to nginx directory
-echo "📋 Copying build files to web root..."
-sudo cp -r dist/* /var/www/inco-tech-solutions/dist/
-
-# Restart Nginx
+# Reload Nginx (config rarely changes, reload is enough)
 echo ""
-echo "🌐 Restarting Nginx..."
-sudo systemctl restart nginx
+echo "🌐 Reloading Nginx..."
+sudo nginx -t && sudo systemctl reload nginx
 
 # Final status check
 echo ""
@@ -696,6 +708,9 @@ sudo systemctl status nginx --no-pager -l
 
 echo ""
 echo "🎉 Inco Tech Solutions has been updated successfully!"
+echo ""
+echo "🔍 Verify bot injection:"
+echo "   curl -A 'Googlebot/2.1' https://incotechsolutions.com/product/YOUR-SLUG | grep '<title>'"
 ```
 
 Make it executable:
@@ -727,14 +742,16 @@ cd server
 npm install --production
 pm2 restart inco-tech-backend
 
-# 3. Update frontend
+# 3. Build frontend (Express serves client/dist/ directly — no copy needed)
 cd ../client
 npm install
 npm run build
-sudo cp -r dist/* /var/www/inco-tech-solutions/dist/
 
-# 4. Restart services
-sudo systemctl restart nginx
+# 4. Reload Nginx (only if config changed)
+sudo nginx -t && sudo systemctl reload nginx
+
+# 5. Verify SEO bot injection
+curl -A "Googlebot/2.1" https://incotechsolutions.com/product/YOUR-SLUG | grep "<title>"
 ```
 
 ---
@@ -866,7 +883,7 @@ pm2 restart inco-tech-backend
 # Check backend is listening on port 8000
 sudo netstat -tlnp | grep 8000
 # Or use:
-sudo lsof -i :5005
+sudo lsof -i :8000
 
 # Check backend logs for errors
 pm2 logs inco-tech-backend --err
@@ -1071,8 +1088,8 @@ curl -X POST https://incotechsolutions.com/api/repairs \
 - [ ] **Backend is running** - `pm2 status` shows inco-tech-backend online
 - [ ] **Database created** - inco_tech_solutions database exists with tables
 - [ ] **Database seeded** - Categories and sample products are loaded
-- [ ] **Frontend built** - Vue.js app compiled to `/dist/`
-- [ ] **Nginx configured** - Site config created and enabled
+- [ ] **Frontend built** - Vue.js app compiled to `client/dist/`
+- [ ] **Nginx configured** - All traffic proxied through Express (see Step 7)
 - [ ] **API accessible** - Can fetch products from `/api/products`
 - [ ] **Frontend loads** - Homepage shows products and categories
 - [ ] **Images upload** - Product image upload folder has correct permissions
@@ -1083,6 +1100,9 @@ curl -X POST https://incotechsolutions.com/api/repairs \
 - [ ] **Deployment script ready** - `deploy.sh` created and tested
 - [ ] **Environment variables** - Backend `.env` configured correctly
 - [ ] **Git repository** - Monorepo cloned and pulling updates works
+- [ ] **SEO bot injection** - `curl -A "Googlebot/2.1" https://incotechsolutions.com/product/SLUG | grep "<title>"` returns product name
+- [ ] **Canonicals** - Each page serves unique `<link rel="canonical">` (check DevTools → Elements → head)
+- [ ] **GSC verified** - Google Search Console URL Inspection confirms rendered title/canonical on product pages
 
 ---
 
@@ -1114,6 +1134,6 @@ cd /var/www/inco-tech-solutions && ./deploy.sh
 
 ---
 
-**Last Updated:** February 2026  
-**Version:** 2.0.0 (Monorepo Edition)  
+**Last Updated:** March 2026  
+**Version:** 3.0.0 (Monorepo + SEO Bot Injection Edition)  
 **Project:** Inco Tech Solutions - Computer Retail & Repair Service

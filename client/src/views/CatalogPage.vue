@@ -229,6 +229,7 @@
 
 <script setup>
 import { categoryAPI, productAPI } from '@/api';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import ProductCard from '@/components/ProductCard.vue';
 import ProductSkeleton from '@/components/ProductSkeleton.vue';
 import Badge from 'primevue/badge';
@@ -239,6 +240,14 @@ import Select from 'primevue/select';
 import Tag from 'primevue/tag';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
+// ── SEO: unique head for /catalog ──
+useSeoHead({
+  title: 'Product Catalog | New & Refurbished Laptops | Inco Tech Solutions',
+  description:
+    'Browse our full catalog of new and refurbished laptops, desktops, and accessories at Inco Tech Solutions. Best prices in Sri Lanka with warranty.',
+  canonical: canonicalUrl('/catalog'),
+});
 
 const route = useRoute();
 const router = useRouter();

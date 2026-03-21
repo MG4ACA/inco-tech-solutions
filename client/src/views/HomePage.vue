@@ -160,6 +160,7 @@
 
 <script setup>
 import { categoryAPI, productAPI } from '@/api';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import HeroSection from '@/components/HeroSection.vue';
 import ProductCard from '@/components/ProductCard.vue';
 import ProductSkeleton from '@/components/ProductSkeleton.vue';
@@ -167,6 +168,14 @@ import RepairForm from '@/components/RepairForm.vue';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import { onMounted, ref } from 'vue';
+
+// ── SEO: canonical + unique title for homepage ──
+useSeoHead({
+  title: 'Inco Tech Solutions | Computer Retail & Repair in Sri Lanka',
+  description:
+    'Sri Lanka\'s trusted source for new and refurbished laptops, computers, and accessories. Expert repair services with fast turnaround and warranty. Visit us today.',
+  canonical: canonicalUrl('/'),
+});
 
 const featuredProducts = ref([]);
 const categories = ref([]);

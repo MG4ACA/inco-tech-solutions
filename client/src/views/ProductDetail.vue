@@ -234,6 +234,7 @@
 
 <script setup>
 import { productAPI } from '@/api';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import ProductCard from '@/components/ProductCard.vue';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
@@ -309,6 +310,38 @@ async function loadProduct(slug) {
   try {
     const res = await productAPI.getOne(slug);
     product.value = res.data.data;
+
+    // ── SEO: inject unique head tags for this product ──
+    const p = product.value;
+    const condition = p.condition_type === 'new' ? 'Brand New' : 'Refurbished';
+    const priceStr = `Rs. ${Number(p.price).toLocaleString('en-LK')}`;
+    useSeoHead({
+      title: `${p.name} | ${condition} | Inco Tech Solutions`,
+      description: p.description
+        ? p.description.slice(0, 155)
+        : `${condition} ${p.brand || ''} ${p.name} at ${priceStr}. Buy from Inco Tech Solutions — Sri Lanka's trusted computer store.`,
+      canonical: canonicalUrl(`/product/${p.slug}`),
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: p.name,
+        description: p.description || '',
+        image: p.image_url ? `https://incotechsolutions.com${p.image_url}` : undefined,
+        brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'LKR',
+          price: p.price,
+          availability:
+            p.status === 'in_stock'
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          url: canonicalUrl(`/product/${p.slug}`),
+          seller: { '@type': 'Organization', name: 'Inco Tech Solutions' },
+        },
+      },
+    });
+
     // Set initial active image after product is loaded
     const imgs =
       Array.isArray(product.value.images) && product.value.images.length > 0
@@ -319,6 +352,8 @@ async function loadProduct(slug) {
     activeImage.value = imgs.length > 0 ? imgs[0] : null;
   } catch (err) {
     console.error('Failed to load product:', err);
+    // ── SEO: noindex missing/deleted products (stops Soft 404) ──
+    useSeoHead({ noindex: true });
   } finally {
     loading.value = false;
   }

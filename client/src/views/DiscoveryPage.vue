@@ -246,15 +246,33 @@
 
 <script setup>
 import { useDiscovery } from '@/composables/useDiscovery';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import RepairForm from '@/components/RepairForm.vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 import Tag from 'primevue/tag';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const { seoData, loading, error, notInZone } = useDiscovery();
+
+// ── SEO: inject head tags once city data resolves ──
+watch(
+  seoData,
+  (data) => {
+    if (!data) return;
+    const cityLabel = data.citySlug.charAt(0).toUpperCase() + data.citySlug.slice(1);
+    useSeoHead({
+      title: `${cityLabel} Computer & Laptop Repair | Inco Tech Solutions`,
+      description:
+        data.metaDesc ||
+        `Expert computer and laptop repair in ${cityLabel}. Certified technicians, fast turnaround, 30-day warranty. Serving the Matara – Colombo coastal corridor.`,
+      canonical: canonicalUrl(`/repair/${data.citySlug}`),
+    });
+  },
+  { immediate: true },
+);
 
 const showRepair = ref(false);
 
@@ -263,6 +281,7 @@ const cityName = computed(() => {
   const slug = seoData.value?.citySlug || '';
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 });
+
 
 const geoCoords = computed(() => {
   const jsonLd = seoData.value?.jsonLd;

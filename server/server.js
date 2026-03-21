@@ -3,6 +3,8 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const botMetaInjector = require('./middleware/botMetaInjector');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,6 +20,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── STATIC FILES ───
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve compiled Vue SPA from client/dist (used by bot renderer + production fallback)
+const DIST_DIR = path.join(__dirname, '..', 'client', 'dist');
+app.use(express.static(DIST_DIR));
+
+// ─── BOT META INJECTOR (must be before API routes — bots only) ───
+app.use(botMetaInjector);
 
 // ─── ROUTES ───
 const productRoutes = require('./routes/products');
