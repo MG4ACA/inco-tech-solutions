@@ -137,14 +137,13 @@ async function metaForProduct(slug) {
 
 async function metaForCity(citySlug) {
   const [rows] = await pool.query(
-    'SELECT city_slug, meta_title, meta_desc FROM seo_entities WHERE city_slug = ? LIMIT 1',
+    'SELECT city_slug, canonical_url, page_title, meta_desc FROM seo_entities WHERE city_slug = ? LIMIT 1',
     [citySlug],
   );
 
   const cityLabel = citySlug.charAt(0).toUpperCase() + citySlug.slice(1);
 
   if (!rows.length) {
-    // City not in DB — still inject a generic canonical so we can noindex it
     return {
       title:       `${cityLabel} Computer Repair | Inco Tech Solutions`,
       description: `Computer and laptop repair services in ${cityLabel}, Sri Lanka.`,
@@ -154,11 +153,12 @@ async function metaForCity(citySlug) {
 
   const s = rows[0];
   return {
-    title:       s.meta_title || `${cityLabel} Computer & Laptop Repair | Inco Tech Solutions`,
+    title:       s.page_title || `${cityLabel} Computer & Laptop Repair | Inco Tech Solutions`,
     description: s.meta_desc  || `Expert computer and laptop repair in ${cityLabel}. Fast turnaround, genuine parts, 30-day warranty.`,
-    canonical:   `${BASE_URL}/repair/${s.city_slug}`,
+    canonical:   s.canonical_url || `${BASE_URL}/repair/${s.city_slug}`,
   };
 }
+
 
 const STATIC_ROUTES = {
   '/': {
