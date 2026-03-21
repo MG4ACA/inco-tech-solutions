@@ -306,8 +306,8 @@ cd /var/www/inco-tech-solutions/server
 node server.js
 
 # In another terminal, test the API
-curl http://localhost:8000/api/products
-curl http://localhost:8000/api/categories
+curl http://localhost:5005/api/products
+curl http://localhost:5005/api/categories
 ```
 
 If successful, you should see JSON responses. Press `Ctrl+C` to stop.
@@ -316,7 +316,7 @@ If successful, you should see JSON responses. Press `Ctrl+C` to stop.
 
 ```bash
 # Check what's using port 8000
-sudo lsof -i :8000
+sudo lsof -i :5005
 
 # If PM2 is running, stop it first
 pm2 stop inco-tech-backend
@@ -435,7 +435,7 @@ Add this configuration:
 ```nginx
 # Upstream backend
 upstream inco_tech_backend {
-    server localhost:8000;
+    server localhost:5005;
     keepalive 64;
 }
 
@@ -590,8 +590,8 @@ pm2 status
 pm2 logs inco-tech-backend
 
 # Test API directly
-curl http://localhost:8000/api/products
-curl http://localhost:8000/api/categories
+curl http://localhost:5005/api/products
+curl http://localhost:5005/api/categories
 ```
 
 ### 9.2 Check Nginx
@@ -820,7 +820,7 @@ pm2 logs inco-tech-backend
 
 # Common issues:
 # 1. Port 8000 already in use
-sudo lsof -i :8000
+sudo lsof -i :5005
 sudo kill -9 <PID>
 
 # 2. Database connection failed
@@ -866,7 +866,7 @@ pm2 restart inco-tech-backend
 # Check backend is listening on port 8000
 sudo netstat -tlnp | grep 8000
 # Or use:
-sudo lsof -i :8000
+sudo lsof -i :5005
 
 # Check backend logs for errors
 pm2 logs inco-tech-backend --err

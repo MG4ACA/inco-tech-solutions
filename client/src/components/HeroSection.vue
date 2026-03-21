@@ -117,37 +117,23 @@
           <div class="hero-visual-container">
             <!-- Main Featured Image -->
             <div class="hero-main-image float-animation">
-              <img
-                src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&h=350&fit=crop&q=80"
-                alt="Premium Laptop"
-                class="hero-laptop-img"
-              />
+              <img :src="heroImages.main" alt="Premium Laptop" class="hero-laptop-img" />
               <!-- Glow ring behind image -->
               <div class="hero-glow-ring"></div>
             </div>
 
             <!-- Floating Product Cards -->
             <div class="hero-float-card hero-float-card-1">
-              <img
-                src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&h=80&fit=crop&q=80"
-                alt="ThinkPad"
-                class="hero-float-img"
-              />
+              <img :src="heroImages.card1" alt="Card 1" class="hero-float-img" />
               <div class="hero-float-info">
-                <span class="hero-float-name">ThinkPad X1</span>
-                <!-- <span class="hero-float-price">$1,549</span> -->
+                <span class="hero-float-name">{{ heroLabels.card1 }}</span>
               </div>
             </div>
 
             <div class="hero-float-card hero-float-card-2">
-              <img
-                src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=120&h=80&fit=crop&q=80"
-                alt="MacBook Pro"
-                class="hero-float-img"
-              />
+              <img :src="heroImages.card2" alt="Card 2" class="hero-float-img" />
               <div class="hero-float-info">
-                <span class="hero-float-name">MacBook Pro</span>
-                <!-- <span class="hero-float-price">$2,199</span> -->
+                <span class="hero-float-name">{{ heroLabels.card2 }}</span>
               </div>
             </div>
 
@@ -163,10 +149,10 @@
             </div>
 
             <!-- Stats Pill -->
-            <div class="hero-stats-pill">
+            <!-- <div class="hero-stats-pill">
               <div class="hero-stats-dot"></div>
               <span>14 Products In Stock</span>
-            </div>
+            </div> -->
 
             <!-- Decorative Circles -->
             <div class="hero-deco-circle hero-deco-1"></div>
@@ -180,10 +166,51 @@
 </template>
 
 <script setup>
+import { settingsAPI } from '@/api';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import { onMounted, reactive } from 'vue';
 
 defineEmits(['openRepair']);
+
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const DEFAULTS = {
+  main: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&h=350&fit=crop&q=80',
+  card1: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&h=80&fit=crop&q=80',
+  card2: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=120&h=80&fit=crop&q=80',
+};
+
+function resolveUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  return `${BASE_URL}${url}`;
+}
+
+const heroImages = reactive({
+  main: DEFAULTS.main,
+  card1: DEFAULTS.card1,
+  card2: DEFAULTS.card2,
+});
+
+const heroLabels = reactive({
+  card1: 'ThinkPad X1',
+  card2: 'MacBook Pro',
+});
+
+onMounted(async () => {
+  try {
+    const res = await settingsAPI.getHero();
+    const d = res.data.data;
+    if (d.hero_main_image_url) heroImages.main = resolveUrl(d.hero_main_image_url);
+    if (d.hero_card1_image_url) heroImages.card1 = resolveUrl(d.hero_card1_image_url);
+    if (d.hero_card2_image_url) heroImages.card2 = resolveUrl(d.hero_card2_image_url);
+    if (d.hero_card1_label) heroLabels.card1 = d.hero_card1_label;
+    if (d.hero_card2_label) heroLabels.card2 = d.hero_card2_label;
+  } catch {
+    // silently fall back to defaults
+  }
+});
 </script>
 
 <style scoped>

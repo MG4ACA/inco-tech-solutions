@@ -117,14 +117,14 @@
               </p>
 
               <!-- Stock Info -->
-              <div class="flex align-items-center gap-2">
+              <!-- <div class="flex align-items-center gap-2">
                 <i class="pi pi-box" style="color: var(--inco-primary-light)"></i>
                 <span class="text-sm font-medium">
                   {{
                     product.quantity > 0 ? `${product.quantity} units available` : 'Out of stock'
                   }}
                 </span>
-              </div>
+              </div> -->
 
               <!-- Warranty -->
               <div v-if="product.warranty" class="flex align-items-center gap-2">

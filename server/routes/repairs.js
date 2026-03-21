@@ -152,7 +152,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
     if (estimated_cost !== undefined) {
       updates.push('estimated_cost = ?');
-      values.push(parseFloat(estimated_cost));
+      values.push(estimated_cost === null ? null : parseFloat(estimated_cost));
     }
     if (admin_notes !== undefined) {
       updates.push('admin_notes = ?');

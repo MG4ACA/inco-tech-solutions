@@ -115,4 +115,16 @@ export const dashboardAPI = {
   },
 };
 
+// ─── Site Settings ───
+export const settingsAPI = {
+  getHero() {
+    return api.get('/settings/hero');
+  },
+  updateHero(formData) {
+    return api.put('/settings/hero', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 export default api;

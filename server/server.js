@@ -26,12 +26,14 @@ const repairRoutes = require('./routes/repairs');
 const authRoutes = require('./routes/auth');
 const seoRoutes = require('./routes/seo');
 const sitemapRouter = require('./routes/sitemap');
+const settingsRoutes = require('./routes/settings');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/repairs', repairRoutes);
 app.use('/api/seo', seoRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ─── SITEMAP & ROBOTS (root-level, no /api prefix) ───
 app.use('/', sitemapRouter);

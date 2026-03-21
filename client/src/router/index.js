@@ -57,6 +57,12 @@ const routes = [
         component: () => import('@/views/admin/SeoManagement.vue'),
         meta: { requiresAuth: true, adminOnly: true },
       },
+      {
+        path: 'hero',
+        name: 'AdminHeroSettings',
+        component: () => import('@/views/admin/HeroSettings.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
+      },
     ],
   },
   // ─── SEO / AEO / GEO Discovery Pages ───

@@ -93,6 +93,7 @@ const allMenuItems = [
   { label: 'Categories',     icon: 'pi pi-tags',       route: '/admin/categories', adminOnly: true },
   { label: 'Repair Requests',icon: 'pi pi-wrench',     route: '/admin/repairs',  adminOnly: false },
   { label: 'SEO Manager',    icon: 'pi pi-globe',      route: '/admin/seo',      adminOnly: true  },
+  { label: 'Hero Settings',  icon: 'pi pi-image',      route: '/admin/hero',     adminOnly: true  },
 ];
 
 const visibleMenuItems = computed(() =>

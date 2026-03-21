@@ -86,6 +86,52 @@ CREATE TABLE IF NOT EXISTS repair_requests (
   INDEX idx_urgency (urgency)
 ) ENGINE=InnoDB;
 
+-- -----------------------------------------------------
+-- Table: admin_users (JWT authentication)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS admin_users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'cashier') NOT NULL DEFAULT 'cashier',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- Table: seo_entities (SEO/AEO/GEO city corridor pages)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seo_entities (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  city_slug VARCHAR(100) NOT NULL UNIQUE,
+  canonical_url VARCHAR(500) NOT NULL,
+  page_title VARCHAR(255) NOT NULL,
+  meta_desc VARCHAR(320) NOT NULL,
+  json_ld TEXT NOT NULL,
+  faq_payload JSON NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_city_slug (city_slug)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table: site_settings (site-wide configuration)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_settings (
+  `key` VARCHAR(100) NOT NULL PRIMARY KEY,
+  `value` TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table: migrations (tracks applied migrations)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS migrations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
 -- =====================================================
 -- SEED DATA
 -- =====================================================
@@ -130,3 +176,19 @@ INSERT INTO products (name, slug, description, price, original_price, category_i
 ('WD Black SN850X 2TB NVMe', 'wd-black-sn850x-2tb', 'Ultra-fast PCIe Gen 4 NVMe SSD. Read speeds up to 7,300 MB/s for gaming and heavy workloads.', 149.99, 199.99, 3, 'new', 'in_stock', 'Western Digital', 'WD_BLACK SN850X', NULL, NULL, '2TB NVMe PCIe Gen 4', NULL, NULL, NULL, NULL, '5 Years WD', 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600&h=400&fit=crop', FALSE, 40),
 
 ('Kingston Fury Beast 32GB DDR5', 'kingston-fury-beast-32gb-ddr5', 'High-performance DDR5 RAM kit (2x16GB) at 5600MHz. Built for gaming and content creation.', 89.99, 119.99, 3, 'new', 'in_stock', 'Kingston', 'Fury Beast DDR5', NULL, '32GB (2x16GB) DDR5 5600MHz', NULL, NULL, NULL, NULL, NULL, 'Lifetime Kingston', 'https://images.unsplash.com/photo-1587829212624-fd3afb60cb53?w=600&h=400&fit=crop', FALSE, 60);
+
+-- Seed Admin Users
+-- Default credentials: admin/admin123, cashier/cashier123
+INSERT INTO admin_users (username, password_hash, role) VALUES
+  ('admin', '$2b$10$63MdNKEkU/HZ5mEaAvTqQ.wTXM8MxkATHMqxkykGgJAySjmiamzf6', 'admin'),
+  ('cashier', '$2b$10$LP.Y92FKMtgL7qxKMW/lieeR4SQO7TD6DUXGgr7SEjL1aflfdqU2u', 'cashier')
+ON DUPLICATE KEY UPDATE username = username;
+
+-- Seed Site Settings (Hero section defaults)
+INSERT INTO site_settings (`key`, `value`) VALUES
+  ('hero_main_image_url',  'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&h=350&fit=crop&q=80'),
+  ('hero_card1_image_url', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&h=80&fit=crop&q=80'),
+  ('hero_card1_label',     'ThinkPad X1'),
+  ('hero_card2_image_url', 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=120&h=80&fit=crop&q=80'),
+  ('hero_card2_label',     'MacBook Pro')
+ON DUPLICATE KEY UPDATE `key` = `key`;
