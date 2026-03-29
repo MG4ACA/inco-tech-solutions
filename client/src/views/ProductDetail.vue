@@ -1,6 +1,6 @@
 <template>
   <div style="padding-top: 80px; min-height: 100vh; background: var(--inco-surface-dark)">
-    <div class="section-container py-5" style="padding-left: 1rem; padding-right: 1rem">
+    <div class="section-container py-5">
       <!-- Loading State -->
       <div v-if="loading" class="grid">
         <div class="col-12 md:col-6">
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <div class="grid" style="gap: 2rem">
+        <div class="grid">
           <!-- Image Gallery -->
           <div class="col-12 md:col-6">
             <div class="cyber-card overflow-hidden">
@@ -65,10 +65,10 @@
           </div>
 
           <!-- Details -->
-          <div class="col-12 md:col-6" style="padding-top: 0">
+          <div class="col-12 md:col-6">
             <div class="flex flex-column gap-3">
               <!-- Category & Condition -->
-              <div class="flex gap-2 align-items-center flex-wrap">
+              <div class="flex gap-2 align-items-center">
                 <Tag :value="product.category_name" severity="info" class="text-xs" />
                 <Tag
                   :value="product.condition_type === 'new' ? 'Brand New' : 'Refurbished'"
@@ -80,12 +80,8 @@
 
               <!-- Title -->
               <h1
-                class="font-bold"
-                style="
-                  color: var(--inco-text-primary);
-                  line-height: 1.2;
-                  font-size: clamp(1.5rem, 5vw, 2.25rem);
-                "
+                class="text-3xl font-bold"
+                style="color: var(--inco-text-primary); line-height: 1.2"
               >
                 {{ product.name }}
               </h1>
@@ -105,7 +101,7 @@
                 </span>
                 <span
                   v-if="product.original_price && product.original_price > product.price"
-                  class="line-through text-sm sm:text-base"
+                  class="text-xl line-through"
                   style="color: var(--inco-text-secondary)"
                 >
                   Rs. {{ formatPrice(product.original_price) }}
@@ -140,17 +136,17 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex gap-3 mt-4 flex-column sm:flex-row">
+              <div class="flex gap-3 mt-2">
                 <Button
                   label="Contact to Purchase"
                   icon="pi pi-phone"
-                  class="btn-cyber w-full sm:flex-1 py-3"
+                  class="btn-cyber flex-1 py-3"
                   :disabled="product.status !== 'in_stock'"
                   @click="initiateCall"
                 />
                 <Button
                   icon="pi pi-heart"
-                  class="p-button-outlined p-button-rounded py-3 w-12"
+                  class="p-button-outlined p-button-rounded py-3"
                   v-tooltip.top="'Add to Wishlist'"
                 />
               </div>
