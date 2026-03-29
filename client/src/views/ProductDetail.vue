@@ -1,6 +1,6 @@
 <template>
   <div style="padding-top: 80px; min-height: 100vh; background: var(--inco-surface-dark)">
-    <div class="section-container py-5">
+    <div class="section-container py-5" style="padding-left: 1rem; padding-right: 1rem">
       <!-- Loading State -->
       <div v-if="loading" class="grid">
         <div class="col-12 md:col-6">
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <div class="grid">
+        <div class="grid" style="gap: 2rem">
           <!-- Image Gallery -->
           <div class="col-12 md:col-6">
             <div class="cyber-card overflow-hidden">
@@ -65,10 +65,10 @@
           </div>
 
           <!-- Details -->
-          <div class="col-12 md:col-6">
+          <div class="col-12 md:col-6" style="padding-top: 0">
             <div class="flex flex-column gap-3">
               <!-- Category & Condition -->
-              <div class="flex gap-2 align-items-center">
+              <div class="flex gap-2 align-items-center flex-wrap">
                 <Tag :value="product.category_name" severity="info" class="text-xs" />
                 <Tag
                   :value="product.condition_type === 'new' ? 'Brand New' : 'Refurbished'"
@@ -80,8 +80,12 @@
 
               <!-- Title -->
               <h1
-                class="text-3xl font-bold"
-                style="color: var(--inco-text-primary); line-height: 1.2"
+                class="font-bold"
+                style="
+                  color: var(--inco-text-primary);
+                  line-height: 1.2;
+                  font-size: clamp(1.5rem, 5vw, 2.25rem);
+                "
               >
                 {{ product.name }}
               </h1>
@@ -92,13 +96,16 @@
               </div>
 
               <!-- Price -->
-              <div class="flex align-items-center gap-3">
-                <span class="text-4xl font-bold" style="color: var(--inco-primary-light)">
+              <div class="flex align-items-center gap-2 flex-wrap">
+                <span
+                  class="font-bold"
+                  style="color: var(--inco-primary-light); font-size: clamp(1.75rem, 4vw, 2.25rem)"
+                >
                   Rs. {{ formatPrice(product.price) }}
                 </span>
                 <span
                   v-if="product.original_price && product.original_price > product.price"
-                  class="text-xl line-through"
+                  class="line-through text-sm sm:text-base"
                   style="color: var(--inco-text-secondary)"
                 >
                   Rs. {{ formatPrice(product.original_price) }}
@@ -133,16 +140,17 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex gap-3 mt-2">
+              <div class="flex gap-3 mt-4 flex-column sm:flex-row">
                 <Button
                   label="Contact to Purchase"
                   icon="pi pi-phone"
-                  class="btn-cyber flex-1 py-3"
+                  class="btn-cyber w-full sm:flex-1 py-3"
                   :disabled="product.status !== 'in_stock'"
+                  @click="initiateCall"
                 />
                 <Button
                   icon="pi pi-heart"
-                  class="p-button-outlined p-button-rounded py-3"
+                  class="p-button-outlined p-button-rounded py-3 w-12"
                   v-tooltip.top="'Add to Wishlist'"
                 />
               </div>
@@ -234,8 +242,8 @@
 
 <script setup>
 import { productAPI } from '@/api';
-import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import ProductCard from '@/components/ProductCard.vue';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 import Tag from 'primevue/tag';
@@ -301,6 +309,11 @@ function formatPrice(val) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+}
+
+function initiateCall() {
+  // Opens phone dialer on mobile, or shows tel: handler dialog on desktop
+  window.location.href = 'tel:+94777402124';
 }
 
 async function loadProduct(slug) {

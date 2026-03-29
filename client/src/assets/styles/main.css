@@ -249,6 +249,7 @@ a:hover {
   align-items: center;
   overflow: hidden;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  padding-top: 80px;
 }
 
 .hero-section::before {
@@ -469,6 +470,35 @@ a:hover {
 
   .section-title {
     font-size: 1.5rem;
+  }
+}
+
+/* ─── Extra Small Screens (< 640px) ─── */
+@media (max-width: 640px) {
+  .section-container {
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .btn-cyber,
+  .btn-outline-cyber {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .p-button.p-button-rounded {
+    width: auto;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
   }
 }
 

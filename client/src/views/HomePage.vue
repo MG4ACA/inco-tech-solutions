@@ -42,7 +42,7 @@
     </section>
 
     <!-- Categories Section -->
-    <section
+    <!-- <section
       class="py-6"
       style="background: linear-gradient(180deg, var(--inco-surface-dark), rgba(15, 23, 42, 0.95))"
     >
@@ -89,37 +89,51 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Why Choose Us -->
     <section class="py-6" style="background: var(--inco-surface-dark)">
       <div class="section-container">
         <div class="text-center mb-5">
-          <h2 class="section-title">Why Choose Inco Tech?</h2>
-          <p class="section-subtitle">We go above and beyond for every customer</p>
+          <h2 class="section-title" style="font-size: clamp(1.2rem, 6vw, 2rem)">
+            Why Choose Inco Tech?
+          </h2>
+          <p class="section-subtitle" style="font-size: clamp(0.85rem, 4vw, 1.1rem)">
+            We go above and beyond for every customer
+          </p>
         </div>
 
         <div class="grid">
-          <div v-for="(feature, i) in features" :key="i" class="col-12 sm:col-6 lg:col-3">
-            <div class="cyber-card p-4 text-center h-full">
-              <div class="flex justify-content-center mb-3">
+          <div v-for="(feature, i) in features" :key="i" class="col-6 sm:col-6 lg:col-3">
+            <div class="cyber-card p-3 text-center h-full">
+              <div class="flex justify-content-center mb-2">
                 <div
                   class="stat-icon"
                   :style="{
                     background: feature.bg,
                     color: feature.color,
-                    width: '56px',
-                    height: '56px',
-                    fontSize: '1.4rem',
+                    width: 'clamp(44px, 10vw, 56px)',
+                    height: 'clamp(44px, 10vw, 56px)',
+                    fontSize: 'clamp(1rem, 5vw, 1.4rem)',
                   }"
                 >
                   <i :class="feature.icon"></i>
                 </div>
               </div>
-              <h4 class="font-bold mb-2" style="color: var(--inco-text-primary)">
+              <h4
+                class="font-bold mb-2"
+                style="color: var(--inco-text-primary); font-size: clamp(0.9rem, 3vw, 1.1rem)"
+              >
                 {{ feature.title }}
               </h4>
-              <p class="text-sm" style="color: var(--inco-text-secondary); line-height: 1.6">
+              <p
+                class="text-sm"
+                style="
+                  color: var(--inco-text-secondary);
+                  line-height: 1.6;
+                  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+                "
+              >
                 {{ feature.desc }}
               </p>
             </div>
@@ -160,20 +174,19 @@
 
 <script setup>
 import { categoryAPI, productAPI } from '@/api';
-import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import HeroSection from '@/components/HeroSection.vue';
 import ProductCard from '@/components/ProductCard.vue';
 import ProductSkeleton from '@/components/ProductSkeleton.vue';
 import RepairForm from '@/components/RepairForm.vue';
+import { canonicalUrl, useSeoHead } from '@/composables/useSeoHead';
 import Button from 'primevue/button';
-import Tag from 'primevue/tag';
 import { onMounted, ref } from 'vue';
 
 // ── SEO: canonical + unique title for homepage ──
 useSeoHead({
   title: 'Inco Tech Solutions | Computer Retail & Repair in Sri Lanka',
   description:
-    'Sri Lanka\'s trusted source for new and refurbished laptops, computers, and accessories. Expert repair services with fast turnaround and warranty. Visit us today.',
+    "Sri Lanka's trusted source for new and refurbished laptops, computers, and accessories. Expert repair services with fast turnaround and warranty. Visit us today.",
   canonical: canonicalUrl('/'),
 });
 

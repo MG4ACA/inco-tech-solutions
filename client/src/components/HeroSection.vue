@@ -16,7 +16,14 @@
               "
             />
 
-            <h1 class="text-5xl lg:text-7xl font-bold mb-4" style="line-height: 1.1">
+            <h1
+              class="font-bold mb-4"
+              style="
+                line-height: 1.3;
+                font-size: clamp(2.75rem, 10vw, 5.5rem);
+                word-break: break-word;
+              "
+            >
               Your Tech,
               <span
                 class="block"
@@ -32,25 +39,40 @@
             </h1>
 
             <p
-              class="text-lg mb-5"
+              class="text-sm sm:text-base lg:text-lg mb-4"
               style="color: var(--inco-text-secondary); max-width: 500px; line-height: 1.7"
             >
               Premium new &amp; refurbished laptops, accessories, and expert repair services.
               Experience cutting-edge tech at competitive prices.
             </p>
 
-            <div class="flex flex-wrap gap-3 mb-5">
+            <!-- Mobile Visual (appears on small screens) -->
+            <div class="lg:hidden mb-4">
+              <div class="hero-mobile-visual">
+                <img :src="heroImages.main" alt="Premium Laptop" class="hero-mobile-image" />
+                <div class="mobile-visual-badge mobile-badge-1">
+                  <i class="pi pi-bolt"></i>
+                  <span>New Arrivals</span>
+                </div>
+                <div class="mobile-visual-badge mobile-badge-2">
+                  <i class="pi pi-wrench"></i>
+                  <span>Expert Repairs</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 sm:gap-3 mb-5">
               <router-link to="/catalog">
                 <Button
                   label="Shop Now"
                   icon="pi pi-shopping-cart"
-                  class="btn-cyber px-5 py-3 text-lg"
+                  class="btn-cyber px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base"
                 />
               </router-link>
               <Button
                 label="Repair My Device"
                 icon="pi pi-wrench"
-                class="btn-outline-cyber px-5 py-3 text-lg"
+                class="btn-outline-cyber px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base"
                 @click="$emit('openRepair')"
               />
             </div>
@@ -112,7 +134,7 @@
           </div>
         </div>
 
-        <!-- Right Visual -->
+        <!-- Right Visual (Desktop only) -->
         <div class="col-12 lg:col-6 hidden lg:flex justify-content-center">
           <div class="hero-visual-container">
             <!-- Main Featured Image -->
@@ -214,6 +236,57 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* ─── Mobile Visual (Small Screens) ─── */
+.hero-mobile-visual {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 123, 255, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.hero-mobile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mobile-visual-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  animation: float 3s ease-in-out infinite;
+}
+
+.mobile-badge-1 {
+  top: 12px;
+  right: 12px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.mobile-badge-2 {
+  bottom: 12px;
+  left: 12px;
+  background: rgba(6, 182, 212, 0.2);
+  color: #06b6d4;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
 /* ─── Hero Visual Container ─── */
 .hero-visual-container {
   position: relative;
